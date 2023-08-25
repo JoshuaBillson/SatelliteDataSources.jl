@@ -1,0 +1,1 @@
+getlayer(raster, layer) = raster[layer]
