@@ -77,6 +77,11 @@ end
     @test dn_scale(Sentinel2) == 0.0001f0
     @test dn_offset(Sentinel2) == 0.0f0
 
+    # Test Resolution Requirement
+    @test_throws ErrorException bandnames(Sentinel2)
+    @test_throws ErrorException wavelengths(Sentinel2)
+    @test_throws ErrorException layernames(Sentinel2)
+
     # Test Color Mapping (10m)
     @test blue_band(Sentinel2{10}) == :B02
     @test green_band(Sentinel2{10}) == :B03
@@ -109,6 +114,7 @@ end
     @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir1)
     @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir2)
     @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :SCL)
+    @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/")
     r_10 = Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :red);
     r_20 = Raster(Sentinel2{20}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir1);
     r_60 = Raster(Sentinel2{60}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir1);
