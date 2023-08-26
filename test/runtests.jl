@@ -16,6 +16,8 @@ const landsat_dst = "data/LC08_L2SP_043024_20200802_20200914_02_T1"
     @test all(bandnames(Landsat7) .== [:B1, :B2, :B3, :B4, :B5, :B7])
     @test all(layernames(Landsat7) .== [:B1, :B2, :B3, :B4, :B5, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :QA])
     @test all(wavelengths(Landsat7) .== [483, 560, 660, 835, 1650, 2220])
+    @test dn_scale(Landsat7) == 0.0000275f0
+    @test dn_offset(Landsat7) == -0.2f0
 
     # Test Color Mapping
     colors = Dict([:blue => :B1, :green => :B2, :red => :B3, :nir => :B4, :swir1 => :B5, :swir2 => :B7])
@@ -37,6 +39,8 @@ end
     @test all(bandnames(Landsat8) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7])
     @test all(layernames(Landsat8) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :QA])
     @test all(wavelengths(Landsat8) .== [443, 483, 560, 660, 865, 1650, 2220])
+    @test dn_scale(Landsat8) == 0.0000275f0
+    @test dn_offset(Landsat8) == -0.2f0
 
     # Test Color Mapping
     colors = Dict([:blue => :B2, :green => :B3, :red => :B4, :nir => :B5, :swir1 => :B6, :swir2 => :B7])
@@ -69,9 +73,15 @@ end
     @test all(layernames(Sentinel2{60}) .== [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12, :blue, :green, :red, :nir, :swir1, :swir2, :SCL])
     @test all(wavelengths(Sentinel2{60}) .== [443, 490, 560, 665, 705, 740, 783, 865, 945, 1610, 2190])
 
+    # Test DN Specifications
+    @test dn_scale(Sentinel2) == 0.0001f0
+    @test dn_offset(Sentinel2) == 0.0f0
+
     # Test Color Mapping (10m)
-    colors = Dict([:blue => :B02, :green => :B03, :red => :B04, :nir => :B08, :swir1 => nothing, :swir2 => nothing])
-    test_colors(Sentinel2{10}, colors)
+    @test blue_band(Sentinel2{10}) == :B02
+    @test green_band(Sentinel2{10}) == :B03
+    @test red_band(Sentinel2{10}) == :B04
+    @test nir_band(Sentinel2{10}) == :B08
 
     # Test Color Mapping (20m)
     colors = Dict([:blue => :B02, :green => :B03, :red => :B04, :nir => :B8A, :swir1 => :B11, :swir2 => :B12])
@@ -105,4 +115,22 @@ end
     @test size(r_10) == s10
     @test size(r_20) == (s10 ./ 2)
     @test size(r_60) == (s10 ./ 6)
+end
+
+@testset "RasterStack" begin
+    # Load Test Data
+    download_data(sentinel_link, sentinel_dst)
+
+    # Load RasterStack
+    rs_10 = RasterStack(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", lazy=true)
+    rs_60 = RasterStack(Sentinel2{60}, "data/L2A_T11UPT_A017828_20200804T184659/", lazy=true)
+
+    # Test Colors
+    @test name(blue(Sentinel2{20}, rs_60)) == :B02
+    @test name(green(Sentinel2{20}, rs_60)) == :B03
+    @test name(red(Sentinel2{20}, rs_60)) == :B04
+    @test name(nir(Sentinel2{20}, rs_60)) == :B8A
+    @test name(nir(Sentinel2{10}, rs_10)) == :B08
+    @test name(swir1(Sentinel2{20}, rs_60)) == :B11
+    @test name(swir2(Sentinel2{20}, rs_60)) == :B12
 end

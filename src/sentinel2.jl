@@ -37,13 +37,13 @@ nir_band(::Type{Sentinel2{10}}) = :B08
 
 nir_band(::Type{<:Sentinel2}) = :B8A
 
-swir1_band(::Type{Sentinel2{10}}) = nothing
+swir1_band(::Type{Sentinel2{20}}) = :B11
 
-swir1_band(::Type{<:Sentinel2}) = :B11
+swir1_band(::Type{Sentinel2{60}}) = :B11
 
-swir2_band(::Type{Sentinel2{10}}) = nothing
+swir2_band(::Type{Sentinel2{20}}) = :B12
 
-swir2_band(::Type{<:Sentinel2}) = :B12
+swir2_band(::Type{Sentinel2{60}}) = :B12
 
 function parse_layers(::Type{T}, dir::String) where {T <: Sentinel2}
     # Construct Regex
