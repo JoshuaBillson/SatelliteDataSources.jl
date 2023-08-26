@@ -1,4 +1,4 @@
-struct Landsat7 <: AbstractBandset end
+struct Landsat7 <: AbstractSatellite end
 
 bandnames(::Type{Landsat7}) = [:B1, :B2, :B3, :B4, :B5, :B7]
 
@@ -17,6 +17,10 @@ nir_band(::Type{Landsat7}) = :B4
 swir1_band(::Type{Landsat7}) = :B5
 
 swir2_band(::Type{Landsat7}) = :B7
+
+dn_scale(::Type{Landsat7}) = 0.0000275f0
+
+dn_offset(::Type{Landsat7}) = -0.2f0
 
 function parse_layers(::Type{Landsat7}, dir::String)
     # Construct Regex

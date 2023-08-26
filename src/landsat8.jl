@@ -1,9 +1,9 @@
 """
-Implements the `AbstractBandset` interface for Landsat 8.
+Implements the `AbstractSatellite` interface for Landsat 8.
 
 Supported layers are: (:B1, :B2, :B3, :B4, :B5, :B6, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :QA, :bands).
 """
-struct Landsat8 <: AbstractBandset end
+struct Landsat8 <: AbstractSatellite end
 
 bandnames(::Type{Landsat8}) = [:B1, :B2, :B3, :B4, :B5, :B6, :B7]
 
@@ -22,6 +22,10 @@ nir_band(::Type{Landsat8}) = :B5
 swir1_band(::Type{Landsat8}) = :B6
 
 swir2_band(::Type{Landsat8}) = :B7
+
+dn_scale(::Type{Landsat8}) = 0.0000275f0
+
+dn_offset(::Type{Landsat8}) = -0.2f0
 
 function parse_layers(::Type{Landsat8}, dir::String)
     # Construct Regex

@@ -25,7 +25,7 @@ function _parse_layers(regexp, files::Vector{String}, layername::Symbol)
     return @pipe map(x -> _parse_layer(regexp, x, layername), files) |> filter(!isnothing ∘ first, _)
 end
 
-function _translate_color(::Type{T}, color::Symbol) where {T <: AbstractBandset}
+function _translate_color(::Type{T}, color::Symbol) where {T <: AbstractSatellite}
     colordict = Dict([:blue => blue_band(T), :green => green_band(T), :red => red_band(T), :nir => nir_band(T), :swir1 => swir1_band(T), :swir2 => swir2_band(T)])
     return color in keys(colordict) ? colordict[color] : color
 end

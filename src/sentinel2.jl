@@ -1,7 +1,7 @@
 """
-Implements the `AbstractBandset` interface for Sentinel 2.
+Implements the `AbstractSatellite` interface for Sentinel 2.
 """
-struct Sentinel2{R} <: AbstractBandset end
+struct Sentinel2{R} <: AbstractSatellite end
 
 bandnames(::Type{<:Sentinel2}) = error("Error: Must specify spatial resolution for Sentinel 2!")
 
