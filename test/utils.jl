@@ -1,4 +1,4 @@
-function test_colors(bandset::Type{<:AbstractBandset}, colors)
+function test_colors(bandset::Type{<:AbstractSatellite}, colors)
     @test blue_band(bandset) == colors[:blue]
     @test green_band(bandset) == colors[:green]
     @test red_band(bandset) == colors[:red]
@@ -7,7 +7,7 @@ function test_colors(bandset::Type{<:AbstractBandset}, colors)
     @test swir2_band(bandset) == colors[:swir2]
 end
 
-function test_layers(bandset::Type{<:AbstractBandset}, answer_src::String, answer_key::String, data_src::String)
+function test_layers(bandset::Type{<:AbstractSatellite}, answer_src::String, answer_key::String, data_src::String)
     answer = JSON.parsefile(answer_src)[answer_key]
     response = getlayers(bandset, data_src)
     @test Set(bandnames(bandset)) == Set(keys(response))

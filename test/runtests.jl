@@ -1,5 +1,5 @@
 using SatelliteTypes
-using Test, Fetch, JSON
+using Test, Fetch, JSON, Rasters, ArchGDAL
 
 include("utils.jl")
 
@@ -24,6 +24,9 @@ const landsat_dst = "data/LC08_L2SP_043024_20200802_20200914_02_T1"
     # Test Layer Parsing
     test_layers(Landsat7, "data/answers.json", "landsat7", "data/LC08_L2SP_043024_20200802_20200914_02_T1/")
     @test first(keys(getlayers(Landsat7, "data/LC08_L2SP_043024_20200802_20200914_02_T1/", layers=:swir1))) == :B5
+
+    # Test Raster
+    @test size(Raster(Landsat7, "data/LC08_L2SP_043024_20200802_20200914_02_T1/", :red, lazy=true)) == (7821, 7921)
 end
 
 @testset "Landsat 8" begin
@@ -42,6 +45,9 @@ end
     # Test Layer Parsing
     test_layers(Landsat8, "data/answers.json", "landsat8", "data/LC08_L2SP_043024_20200802_20200914_02_T1/")
     @test first(keys(getlayers(Landsat8, "data/LC08_L2SP_043024_20200802_20200914_02_T1/", layers=:swir1))) == :B6
+
+    # Test Raster
+    @test size(Raster(Landsat8, "data/LC08_L2SP_043024_20200802_20200914_02_T1/", :red, lazy=true)) == (7821, 7921)
 end
 
 @testset "Sentinel 2" begin
@@ -87,4 +93,16 @@ end
     test_layers(Sentinel2{10}, "data/answers.json", "sentinel2_10", "data/L2A_T11UPT_A017828_20200804T184659/")
     @test_throws ArgumentError getlayers(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", layers=:swir1)
     @test first(keys(getlayers(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", layers=:red))) == :B04
+
+    # Test Raster
+    s10 = (10980, 10980)
+    @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir1)
+    @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir2)
+    @test_throws ArgumentError Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :SCL)
+    r_10 = Raster(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", :red);
+    r_20 = Raster(Sentinel2{20}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir1);
+    r_60 = Raster(Sentinel2{60}, "data/L2A_T11UPT_A017828_20200804T184659/", :swir1);
+    @test size(r_10) == s10
+    @test size(r_20) == (s10 ./ 2)
+    @test size(r_60) == (s10 ./ 6)
 end

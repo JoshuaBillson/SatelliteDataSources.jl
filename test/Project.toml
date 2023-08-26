@@ -1,4 +1,6 @@
 [deps]
+ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 Fetch = "bb354801-46f6-40b6-9c3d-d42d7a74c775"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Rasters = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
