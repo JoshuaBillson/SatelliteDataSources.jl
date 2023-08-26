@@ -25,16 +25,6 @@ Return the central wavelengths for all bands in order from shortest to longest.
 wavelengths(::Type{T}) where {T <: AbstractBandset} = error("Error: `wavelengths` not defined for '$(T)'!")
 
 """
-    wavelength(::Type{AbstractBandset}, band::Symbol)
-
-Return the central wavelength for the corresponding band.
-"""
-function wavelength(::Type{T}, band::Symbol) where {T <: AbstractBandset}
-    !(band in bandnames(T)) && throw(ArgumentError("$band not found in bands $(bandnames(T))!"))
-    return @pipe findfirst(isequal(band), bandnames(T)) |> wavelengths(T)[_]
-end
-
-"""
     blue_band(::Type{AbstractBandset})
 
 Return the blue band for the given sensor.
@@ -77,12 +67,33 @@ Return the swir2 band for the given sensor.
 swir2_band(::Type{T}) where {T <: AbstractBandset} = error("Error: Band 'swir2' not defined for $(T)!")
 
 """
-    getlayers(::Type{AbstractBandset}, dir::String)
+    parse_layers(::Type{AbstractBandset}, dir::String)
 
 Retrieve all layers in the provided directory. Returns a dictionary where layer names are keys and filenames are values.
 """
-getlayers(::Type{T}, dir::String) where {T <: AbstractBandset} = error("Error: Band 'swir2' not defined for $(T)!")
+parse_layers(::Type{T}, dir::String) where {T <: AbstractBandset} = error("Error: Band 'parse_layers' not defined for $(T)!")
 
+
+###################
+# Derived Methods #
+###################
+
+
+"""
+    wavelength(::Type{AbstractBandset}, band::Symbol)
+
+Return the central wavelength for the corresponding band.
+"""
+function wavelength(::Type{T}, band::Symbol) where {T <: AbstractBandset}
+    !(band in bandnames(T)) && throw(ArgumentError("$band not found in bands $(bandnames(T))!"))
+    return @pipe findfirst(isequal(band), bandnames(T)) |> wavelengths(T)[_]
+end
+
+"""
+    getlayers(::Type{T}, dir::String; layers=bandnames(T)) where {T <: AbstractBandset}
+
+Retrieve the requested layers in the provided directory. Returns a dictionary where layer names are keys and filenames are values.
+"""
 function getlayers(::Type{T}, dir::String; layers=bandnames(T)) where {T <: AbstractBandset}
     # Handle Single Layers
     layers = layers isa AbstractVector ? layers : [layers]
@@ -106,3 +117,15 @@ function getlayers(::Type{T}, dir::String; layers=bandnames(T)) where {T <: Abst
     # Return Requested Layers
     return Dict([k => v for (k, v) in all_layers if k in layers])
 end
+
+blue(::Type{T}, raster) where {T <: AbstractBandset} = getlayer(raster, blue_band(T))
+
+green(::Type{T}, raster) where {T <: AbstractBandset} = getlayer(raster, green_band(T))
+
+red(::Type{T}, raster) where {T <: AbstractBandset} = getlayer(raster, red_band(T))
+
+nir(::Type{T}, raster) where {T <: AbstractBandset} = getlayer(raster, nir_band(T))
+
+swir1(::Type{T}, raster) where {T <: AbstractBandset} = getlayer(raster, swir1_band(T))
+
+swir2(::Type{T}, raster) where {T <: AbstractBandset} = getlayer(raster, swir2_band(T))
