@@ -7,6 +7,13 @@ function test_colors(bandset::Type{<:AbstractBandset}, colors)
     @test swir2_band(bandset) == colors[:swir2]
 end
 
+function test_layers(bandset::Type{<:AbstractBandset}, answer_src::String, answer_key::String, data_src::String)
+    answer = JSON.parsefile(answer_src)[answer_key]
+    response = getlayers(bandset, data_src)
+    @test Set(bandnames(bandset)) == Set(keys(response))
+    @test all([answer[k] == response[Symbol(k)] for k in keys(answer)])
+end
+
 function download_data(link, dst)
     mkpath(joinpath(splitpath(dst)[1:end-1]))
     if !isdir(dst)

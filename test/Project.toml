@@ -1,3 +1,4 @@
 [deps]
 Fetch = "bb354801-46f6-40b6-9c3d-d42d7a74c775"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
