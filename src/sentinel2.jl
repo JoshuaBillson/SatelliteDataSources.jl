@@ -11,21 +11,21 @@ layernames(::Type{<:Sentinel2}) = error("Error: Must specify spatial resolution 
 
 bandnames(::Type{Sentinel2{60}}) = [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12]
 
-wavelengths(::Type{Sentinel2{60}}) = [443, 490, 560, 665, 706, 740, 783, 865, 945, 1610, 2190]
+wavelengths(::Type{Sentinel2{60}}) = [443, 490, 560, 665, 705, 740, 783, 865, 945, 1610, 2190]
 
-layernames(::Type{Sentinel2{60}}) = [bandnames(Sentinel2{60})..., :blue, :green, :red, :nir, :swir1, :swir2, :SCL, :bands]
+layernames(::Type{Sentinel2{60}}) = [bandnames(Sentinel2{60})..., :blue, :green, :red, :nir, :swir1, :swir2, :SCL]
 
 bandnames(::Type{Sentinel2{20}}) = [:B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B11, :B12]
 
-wavelengths(::Type{Sentinel2{20}}) = [490, 560, 665, 706, 740, 783, 865, 1610, 2190]
+wavelengths(::Type{Sentinel2{20}}) = [490, 560, 665, 705, 740, 783, 865, 1610, 2190]
 
-layernames(::Type{Sentinel2{20}}) = [bandnames(Sentinel2{20})..., :blue, :green, :red, :nir, :swir1, :swir2, :SCL, :bands]
+layernames(::Type{Sentinel2{20}}) = [bandnames(Sentinel2{20})..., :blue, :green, :red, :nir, :swir1, :swir2, :SCL]
 
 bandnames(::Type{Sentinel2{10}}) = [:B02, :B03, :B04, :B08]
 
 wavelengths(::Type{Sentinel2{10}}) = [490, 560, 665, 842]
 
-layernames(::Type{Sentinel2{10}}) = [bandnames(Sentinel2{10})..., :blue, :green, :red, :nir, :bands]
+layernames(::Type{Sentinel2{10}}) = [bandnames(Sentinel2{10})..., :blue, :green, :red, :nir]
 
 blue_band(::Type{<:Sentinel2}) = :B02
 
@@ -37,7 +37,11 @@ nir_band(::Type{Sentinel2{10}}) = :B08
 
 nir_band(::Type{<:Sentinel2}) = :B8A
 
+swir1_band(::Type{Sentinel2{10}}) = nothing
+
 swir1_band(::Type{<:Sentinel2}) = :B11
+
+swir2_band(::Type{Sentinel2{10}}) = nothing
 
 swir2_band(::Type{<:Sentinel2}) = :B12
 

@@ -8,6 +8,7 @@ function test_colors(bandset::Type{<:AbstractBandset}, colors)
 end
 
 function download_data(link, dst)
+    mkpath(joinpath(splitpath(dst)[1:end-1]))
     if !isdir(dst)
         dst_path = splitpath(dst)[1:end-1] |> joinpath
         file = gdownload(link, dst_path)

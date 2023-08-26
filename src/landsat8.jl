@@ -7,7 +7,7 @@ struct Landsat8 <: AbstractBandset end
 
 bandnames(::Type{Landsat8}) = [:B1, :B2, :B3, :B4, :B5, :B6, :B7]
 
-layernames(::Type{Landsat8}) = [bandnames(Landsat8)..., :blue, :green, :red, :nir, :swir1, :swir2, :QA, :bands]
+layernames(::Type{Landsat8}) = [bandnames(Landsat8)..., :blue, :green, :red, :nir, :swir1, :swir2, :QA]
 
 wavelengths(::Type{Landsat8}) = [443, 483, 560, 660, 865, 1650, 2220]
 
