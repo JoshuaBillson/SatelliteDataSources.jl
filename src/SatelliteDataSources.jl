@@ -1,4 +1,4 @@
-module SatelliteTypes
+module SatelliteDataSources
 
 using ReadableRegex, OrderedCollections
 using Pipe: @pipe

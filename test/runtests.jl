@@ -1,4 +1,4 @@
-using SatelliteTypes
+using SatelliteDataSources
 using Test, Fetch, JSON, Rasters, ArchGDAL
 
 include("utils.jl")

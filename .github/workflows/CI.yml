@@ -60,6 +60,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using SatelliteTypes
-            DocMeta.setdocmeta!(SatelliteTypes, :DocTestSetup, :(using SatelliteTypes); recursive=true)
-            doctest(SatelliteTypes)'
+            using SatelliteDataSources
+            DocMeta.setdocmeta!(SatelliteDataSources, :DocTestSetup, :(using SatelliteDataSources); recursive=true)
+            doctest(SatelliteDataSources)'

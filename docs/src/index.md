@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = SatelliteTypes
+CurrentModule = SatelliteDataSources
 ```
 
-# SatelliteTypes
+# SatelliteDataSources
 
-Documentation for [SatelliteTypes](https://github.com/JoshuaBillson/SatelliteTypes.jl).
+Documentation for [SatelliteDataSources](https://github.com/JoshuaBillson/SatelliteDataSources.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [SatelliteTypes]
+Modules = [SatelliteDataSources]
 ```

@@ -1,4 +1,4 @@
-name = "SatelliteTypes"
+name = "SatelliteDataSources"
 uuid = "104c01f3-edb2-4478-93b7-cdaa98dd5680"
 authors = ["Joshua Billson"]
 version = "1.0.0-DEV"
@@ -12,7 +12,7 @@ ReadableRegex = "cbbcb084-453d-4c4c-b292-e315607ba6a4"
 Rasters = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 
 [extensions]
-SatelliteTypesRastersExt = "Rasters"
+SatelliteDataSourcesRastersExt = "Rasters"
 
 [compat]
 OrderedCollections = "1"

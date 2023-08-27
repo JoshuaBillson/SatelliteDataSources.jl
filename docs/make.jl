@@ -1,18 +1,18 @@
 push!(LOAD_PATH,"../src/")
 
-using SatelliteTypes
+using SatelliteDataSources
 using Documenter
 
-DocMeta.setdocmeta!(SatelliteTypes, :DocTestSetup, :(using SatelliteTypes); recursive=true)
+DocMeta.setdocmeta!(SatelliteDataSources, :DocTestSetup, :(using SatelliteDataSources); recursive=true)
 
 makedocs(;
-    modules=[SatelliteTypes],
+    modules=[SatelliteDataSources],
     authors="Joshua Billson",
-    repo="https://github.com/JoshuaBillson/SatelliteTypes.jl/blob/{commit}{path}#{line}",
-    sitename="SatelliteTypes.jl",
+    repo="https://github.com/JoshuaBillson/SatelliteDataSources.jl/blob/{commit}{path}#{line}",
+    sitename="SatelliteDataSources.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://JoshuaBillson.github.io/SatelliteTypes.jl",
+        canonical="https://JoshuaBillson.github.io/SatelliteDataSources.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -22,6 +22,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/JoshuaBillson/SatelliteTypes.jl",
+    repo="github.com/JoshuaBillson/SatelliteDataSources.jl",
     devbranch="main",
 )
