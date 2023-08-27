@@ -7,6 +7,8 @@ const sentinel_link = "https://drive.google.com/file/d/1Q6LF2Hk49zSHgQqmdICBvjpp
 const sentinel_dst = "data/L2A_T11UPT_A017828_20200804T184659"
 const landsat_link = "https://drive.google.com/file/d/1S5H_oyWZZInOzJK4glBCr6LgXSADzhOV/view?usp=sharing"
 const landsat_dst = "data/LC08_L2SP_043024_20200802_20200914_02_T1"
+const landsat9_link = "https://drive.google.com/file/d/1PJ0zFqbmVZROwdprZfXrxz-TaVRSevMJ/view?usp=sharing"
+const landsat9_dst = "data/LC09_L2SP_042023_20220825_20230401_02_T1"
 
 @testset "Landsat 7" begin
     # Load Test Data
@@ -52,6 +54,29 @@ end
 
     # Test Raster
     @test size(Raster(Landsat8, "data/LC08_L2SP_043024_20200802_20200914_02_T1/", :red, lazy=true)) == (7821, 7921)
+end
+
+@testset "Landsat 9" begin
+    # Load Test Data
+    download_data(landsat9_link, landsat9_dst)
+
+    # Test Specifications
+    @test all(bandnames(Landsat9) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7])
+    @test all(layernames(Landsat9) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :QA])
+    @test all(wavelengths(Landsat9) .== [443, 483, 560, 660, 865, 1650, 2220])
+    @test dn_scale(Landsat9) == 0.0000275f0
+    @test dn_offset(Landsat9) == -0.2f0
+
+    # Test Color Mapping
+    colors = Dict([:blue => :B2, :green => :B3, :red => :B4, :nir => :B5, :swir1 => :B6, :swir2 => :B7])
+    test_colors(Landsat9, colors)
+
+    # Test Layer Parsing
+    test_layers(Landsat9, "data/answers.json", "landsat9", "data/LC09_L2SP_042023_20220825_20230401_02_T1/")
+    @test first(keys(getlayers(Landsat9, "data/LC09_L2SP_042023_20220825_20230401_02_T1/", layers=:swir1))) == :B6
+
+    # Test Raster
+    @test size(Raster(Landsat9, "data/LC09_L2SP_042023_20220825_20230401_02_T1/", :red, lazy=true)) == (8091, 8171)
 end
 
 @testset "Sentinel 2" begin
