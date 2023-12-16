@@ -11,15 +11,5 @@ function test_layers(bandset::Type{<:AbstractSatellite}, answer_src::String, ans
     answer = JSON.parsefile(answer_src)[answer_key]
     response = getlayers(bandset, data_src)
     @test Set(bandnames(bandset)) == Set(keys(response))
-    @test all([answer[k] == response[Symbol(k)] for k in keys(answer)])
-end
-
-function download_data(link, dst)
-    mkpath(joinpath(splitpath(dst)[1:end-1]))
-    if !isdir(dst)
-        dst_path = splitpath(dst)[1:end-1] |> joinpath
-        file = gdownload(link, dst_path)
-        run(`unzip $file -d $dst_path`)
-        rm(file, force=true)
-    end
+    @test all([answer[k] == basename(response[Symbol(k)]) for k in keys(answer)])
 end

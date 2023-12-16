@@ -14,6 +14,8 @@ red_band(::Type{DESIS}) = 90
 
 nir_band(::Type{DESIS}) = 175
 
+decode_dn(::Type{DESIS}, dn::Number) = dn * 0.0001f0
+
 function parse_layers(::Type{DESIS}, dir::String)
     # Construct Regex
     band_regex = "SPECTRAL_IMAGE." * either("TIF", "tif", "jp2") * END
