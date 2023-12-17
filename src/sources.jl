@@ -1,19 +1,21 @@
 """
-Super type of all concrete layer sources.
+Super type of all layer sources.
 """
 abstract type AbstractLayerSource end
 
 """
-Represents a layer corresponding to a file. 
-Commonly used for sensors which store their bands in individual files.
+A layer corresponding to a file.  
+
+Commonly used for sensors which store their bands as individual rasters.
 """
 struct File <: AbstractLayerSource
     regex::RegexString
 end
 
 """
-Represents a layer corresponding to a particular bit in a single-band file. 
-Commonly used for QA and scene classification masks.
+A layer corresponding to a particular bit in a single-band file.  
+
+Landsat uses this format to encode segmentation masks within the QA file.
 """
 struct BitField <: AbstractLayerSource
     regex::RegexString
@@ -21,8 +23,9 @@ struct BitField <: AbstractLayerSource
 end
 
 """
-Represents a layer corresponding to a particular bit in a single-band file. 
-Commonly used for QA and scene classification masks.
+A layer corresponding to a specific value in a single-band file.  
+
+Sentinel 2 uses this format to encode segmentation masks in the SCL file.
 """
 struct MaskValue{T} <: AbstractLayerSource
     regex::RegexString
@@ -30,8 +33,9 @@ struct MaskValue{T} <: AbstractLayerSource
 end
 
 """
-Represents a layer corresponding to a particular band in a multi-band file. 
-Commonly used for sensors which store their bands as a single multi-band file.
+A layer corresponding to a particular band in a multi-band file.  
+
+Commonly used for sensors which store their bands in a single multi-band raster.
 """
 struct Band <: AbstractLayerSource
     regex::RegexString

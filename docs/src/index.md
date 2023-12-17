@@ -6,7 +6,7 @@ CurrentModule = SatelliteDataSources
 
 [SatelliteDataSources](https://github.com/JoshuaBillson/SatelliteDataSources.jl) is a pure Julia package built on top of [Rasters.jl](https://github.com/rafaqz/Rasters.jl) for reading and manipulating satellite imagery. Each 
 `AbstractSatellite` provides a set of layers that can be conveniently read into either a `Raster` or `RasterStack`.
-Additionally, all `AbstractSatellite` types define a collection of sensor-specific information, such digital number
+Additionally, all `AbstractSatellite` types define a collection of sensor-specific information, such as digital number
 encoding, band wavelength, and band color.
 
 # Supported Sensors
@@ -34,8 +34,24 @@ red_band
 nir_band
 swir1_band
 swir2_band
+dn_scale
+dn_offset
 decode
 encode
+Rasters.Raster
+```
+
+# Layer Sources
+
+A sensor's layers can come form a variety of sources, including single-band rasters, multiband rasters, and bit-fields. However, we do not want to expose these particulars to the end user. Thus, we rely on several Julia types to represent this abstraction. Each of these types are sub-types of `AbstractLayerSource` and store the necessary information to retrieve the corresponding layer.
+
+```@docs
+AbstractLayerSource
+File
+Band
+MaskValue
+BitField
+layer_source
 ```
 
 # Example

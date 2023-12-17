@@ -83,7 +83,7 @@ dn_offset(::Type{<:AbstractSatellite}, layer::Symbol) = 0.0f0
 """
     layer_source(::Type{AbstractSatellite}, layer::Symbol)
 
-Retrieve the AbstractLayerSource for the given layer and sensor type.
+Retrieve the `AbstractLayerSource` for the given layer and sensor type.
 """
 function layer_source end
 

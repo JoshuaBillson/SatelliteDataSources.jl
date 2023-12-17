@@ -61,3 +61,27 @@ function layer_source(::Type{Landsat8}, layer::Symbol)
         _ => error("Landsat8 does not support layer :$(layer)!")
     end
 end
+
+function parse_metadata(file::String)
+    # Build Regex
+    sensor_pattern = capture(rs"L" * ("C", "O", "T", "E", "M") * exactly(2, DIGIT), as="product")
+    level_pattern = capture(rs"L" * DIGIT * exactly(2, WORD), as="level")
+    acquisition_date_pattern = capture(exactly(8, DIGIT), as="acquired")
+    processing_date_pattern = capture(exactly(8, DIGIT), as="processed")
+    collection_pattern = capture(("01", "02"), as="collection")
+    regex = sensor_pattern * "_" * level_pattern * rs"_\d{6}_" * acquisition_date_pattern * "_" * processing_date_pattern * "_" * collection_pattern
+
+    # Parse Data From File
+    m = match(regex, file)
+
+    # Return Metadata
+    if !isnothing(m)
+        return Dict( 
+            "product" => m["product"], 
+            "level" => m["level"], 
+            "acquired" => Date(m["acquired"], "yyyymmdd"), 
+            "processed" => Date(m["processed"], "yyyymmdd"), 
+            "collection" => m["collection"] )
+    end
+    return Dict{String, Any}()
+end

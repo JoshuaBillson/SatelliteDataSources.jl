@@ -1,11 +1,22 @@
+"""
+    Raster(s::Type{AbstractSatellite}, dir::String, layer::Symbol; kwargs...)
+
+Read a single layer into a `Rasters.Raster`.
+
+# Parameters
+- `s`: The `AbstractSatellite` that produced the raster(s) in question.
+- `dir`: The directory containing the satellite layers.
+- `layer`: The layer to be read. See `layers(s)` for a list of available layers for sensor `s`.
+"""
 function Rasters.Raster(::Type{T}, dir::String, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
     layer = _translate_color(T, layer)
     source = layer_source(T, layer)
     return _read_layer(source, dir, layer; kwargs...)
 end
 
-function Rasters.RasterStack(::Type{T}, dir::String, layers=bandnames(T); kwargs...) where {T <: AbstractSatellite}
+function Rasters.RasterStack(::Type{T}, dir::String, layers=bands(T); kwargs...) where {T <: AbstractSatellite}
     layers isa Vector{Symbol} || throw(ArgumentError("`layers` must be a `Vector{Symbol}`!"))
+    layers = map(x -> _translate_color(T, x), layers)
     rasters = [Rasters.Raster(T, dir, layer; kwargs...) for layer in layers]
     return Rasters.RasterStack(NamedTuple{Tuple(layers)}(rasters); kwargs...)
 end
