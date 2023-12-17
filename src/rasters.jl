@@ -10,6 +10,17 @@ function Rasters.RasterStack(::Type{T}, dir::String, layers=bandnames(T); kwargs
     return Rasters.RasterStack(NamedTuple{Tuple(layers)}(rasters); kwargs...)
 end
 
+"""
+    decode(s::Type{AbstractSatellite}, raster::Rasters.AbstractRaster)
+    decode(s::Type{AbstractSatellite}, raster::Rasters.AbstractRasterStack)
+
+Decode the Digital Number (DN) values in the given raster(s).
+Typically, the decoded values will be in either reflectance (visual bands) or Kelvin (thermal bands).
+
+# Parameters
+- `s`: The `AbstractSatellite` that produced the raster(s) in question.
+- `raster`: Either a `Rasters.Raster` or `Rasters.RasterStack` to be decoded.
+"""
 function decode(::Type{T}, raster::Rasters.AbstractRaster) where {T <: AbstractSatellite} 
     scale = dn_scale(T, raster.name)
     offset = dn_offset(T, raster.name)
@@ -21,6 +32,18 @@ function decode(::Type{T}, raster::Rasters.AbstractRasterStack) where {T <: Abst
     map(x -> decode(T, x), raster)
 end
 
+"""
+    encode(s::Type{AbstractSatellite}, raster::Rasters.AbstractRaster; encoding_type=UInt16, missingval=0x0000)
+    encode(s::Type{AbstractSatellite}, raster::Rasters.AbstractRasterStack; kwargs...)
+
+Encode the provided raster(s) to Digital Numbers (DN).
+
+# Parameters
+- `s`: The `AbstractSatellite` that produced the raster(s) in question.
+- `raster`: Either a `Rasters.Raster` or `Rasters.RasterStack` to be encoded.
+- `encoding_type`: The Julia type to use for storing the encoded values (default = `UInt16`).
+- `missingval`: The value to denote missing values (default = `0x0000`).
+"""
 function encode(::Type{T}, raster::Rasters.AbstractRaster; encoding_type=UInt16, missingval=0x0000) where {T <: AbstractSatellite} 
     scale = dn_scale(T, raster.name)
     offset = dn_offset(T, raster.name)

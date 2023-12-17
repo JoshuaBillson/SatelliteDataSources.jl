@@ -1,7 +1,7 @@
 """
 Implements the `AbstractSatellite` interface for Landsat 8.
 
-Supported Layers: :B1, :B2, :B3, :B4, :B5, :B6, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :panchromatic, :thermal1, :thermal2, :dilated_clouds, :clouds, :cloud_shadow, :snow, :water.
+**Supported Layers:** `:B1`, `:B2`, `:B3`, `:B4`, `:B5`, `:B6`, `:B7`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:panchromatic`, `:thermal1`, `:thermal2`, `:dilated_clouds`, `:clouds`, `:cloud_shadow`, `:snow`, `:water`
 """
 struct Landsat8 <: AbstractSatellite end
 

@@ -2,11 +2,12 @@
 Implements the `AbstractSatellite` interface for Sentinel 2.
 The user must specify a resolution of eith 10, 20, or 60 meters.
 
-Sentinel2{10} Layers: :B02, :B03, :B04, :B08, :blue, :green, :red, :nir  
+**Supported Layers (10m):** `:B02`, `:B03`, `:B04`, `:B08`, `:blue`, `:green`, `:red`, `:nir`  
 
-Sentinel2{20} Layers: :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B11, :B12, :blue, :green, :red, :nir, :swir1, :swir2, :cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :soil, :water, :snow  
+**Supported Layers (20m):** `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B11`, `:B12`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:cloud_shadow`, `:clouds_med`, `:clouds_high`, `:cirrus`, `:vegetation`, `:soil`, `:water`, `:snow`  
 
-Sentinel2{60} Layers: :B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12, :blue, :green, :red, :nir, :swir1, :swir2, :cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :soil, :water, :snow  
+**Supported Layers (60m):** `:B01`, `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B09`, `:B11`, `:B12`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:cloud_shadow`, `:clouds_med`, `:clouds_high`, `:cirrus`, `:vegetation`, `:soil`, `:water`, `:snow`  
+
 """
 struct Sentinel2{R} <: AbstractSatellite end
 
