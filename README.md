@@ -5,25 +5,30 @@
 [![Build Status](https://github.com/JoshuaBillson/SatelliteDataSources.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JoshuaBillson/SatelliteDataSources.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/JoshuaBillson/SatelliteDataSources.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JoshuaBillson/SatelliteDataSources.jl)
 
-SatelliteDataSources is a package for automating the retrieval of bands/layers from common remote sensing products. At present, data sources must be saved locally. Support is provided for [Rasters.jl](https://github.com/rafaqz/Rasters.jl), which enables the following syntax for loading remote sensing products:
+[SatelliteDataSources](https://github.com/JoshuaBillson/SatelliteDataSources.jl) is a pure Julia package built on top of [Rasters.jl](https://github.com/rafaqz/Rasters.jl) for reading and manipulating satellite imagery. Each 
+`AbstractSatellite` provides a set of layers that can be conveniently read into either a `Raster` or `RasterStack`.
+Additionally, all `AbstractSatellite` types define a collection of sensor-specific information, such digital number
+encoding, band wavelength, and band color. For details on supported satellites, please refer to the [Docs](https://JoshuaBillson.github.io/SatelliteDataSources.jl/stable/).
+
+# Example
 
 ```julia
-# Load All Sentinel 2 Bands With 10m Resolution
-RasterStack(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/")
+using Rasters, SatelliteDataSources
 
-# Load The Red, Green, and Blue Sentinel 2 Bands At 10m Resolution
-RasterStack(Sentinel2{10}, "data/L2A_T11UPT_A017828_20200804T184659/", [:red, :green, :blue])
+# Path to Satellite Product
+src = "data/LC08_L2SP_043024_20200802_20200914_02_T1"
 
-# Load The SCL Layer At 60m Resolution
-Raster(Sentinel2{60}, "data/L2A_T11UPT_A017828_20200804T184659/", :SCL)
+# Load the Blue, Green, Red, and NIR Bands
+stack = RasterStack(Landsat8, src, [:blue, :green, :red, :nir], lazy=true)
+
+# Mask Clouds
+cloud_mask = Raster(Landsat8, src, :clouds) 
+shadow_mask = Raster(Landsat8, src, :cloud_shadow) 
+raster_mask = .!(boolmask(cloud_mask) .|| boolmask(shadow_mask))
+masked_stack = mask(stack, with=raster_mask)
+
+# Save Processed Data as a Multiband Raster
+masked_raster = Raster(masked_stack)
+write("data/masked_bands.tif", masked_raster)
+
 ```
-
-# Supported Sensors
-
-| Satellites           | Supported Layers                                                                                                                                      |
-| -------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Landsat 7            | `:B1`, `:B2`, `:B3`, `:B4`, `:B5`, `:B7`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:QA`                                                |
-| Landsat 8            | `:B1`, `:B2`, `:B3`, `:B4`, `:B5`, `:B6`, `:B7`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:QA`                                         |
-| Landsat 9            | `:B1`, `:B2`, `:B3`, `:B4`, `:B5`, `:B6`, `:B7`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:QA`                                         |
-| Sentinel 2   &nbsp;  | `:B01`, `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B09`, `:B11`, `:B12`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:SCL` |
-| DESIS                | `:bands`, `:QA`                                                                                                                                       |
