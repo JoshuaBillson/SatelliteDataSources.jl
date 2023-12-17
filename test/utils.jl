@@ -36,3 +36,20 @@ function get_sentinel_mask(scl::Raster, layer::Symbol)
         :snow => UInt8.(scl .== 0x0b)
     end
 end
+
+function get_landsat_mask(qa::Raster, layer::Symbol)
+    @match layer begin
+        :dilated_clouds => read_bit(qa, 2)
+        :clouds => read_bit(qa, 4)
+        :cloud_shadow => read_bit(qa, 5)
+        :snow => read_bit(qa, 6)
+        :water => read_bit(qa, 8)
+    end
+end
+
+function read_bit(x, pos, bits=16)
+    left_shift = bits - pos
+    right_shift = bits - 1
+    new_x = UInt8.((x .<< left_shift) .>> right_shift)
+    return Rasters.rebuild(new_x, missingval=0x00, name=x.name)
+end

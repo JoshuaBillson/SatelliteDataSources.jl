@@ -70,6 +70,14 @@ end
     @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B6.TIF$", r6.metadata["filepath"]))
     @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B7.TIF$", r7.metadata["filepath"]))
     @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_ST_B10.TIF$", rt.metadata["filepath"]))
+
+    # Test Masks
+    mask_layers = [:dilated_clouds, :clouds, :cloud_shadow, :snow, :water]
+    masks = RasterStack(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", mask_layers)
+    qa = Raster("data/LC08_L2SP_043024_20200802_20200914_02_T1/LC08_L2SP_043024_20200802_20200914_02_T1/LC08_L2SP_043024_20200802_20200914_02_T1_QA_PIXEL.TIF")
+    for layer in mask_layers
+        @test all(get_landsat_mask(qa, layer) .== masks[layer])
+    end
 end
 
 @testset "Landsat 9" begin
@@ -106,6 +114,14 @@ end
     @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B6.TIF$", r6.metadata["filepath"]))
     @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B7.TIF$", r7.metadata["filepath"]))
     @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_ST_B10.TIF$", rt.metadata["filepath"]))
+
+    # Test Masks
+    mask_layers = [:dilated_clouds, :clouds, :cloud_shadow, :snow, :water]
+    masks = RasterStack(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", mask_layers)
+    qa = Raster("data/LC09_L2SP_042023_20220825_20230401_02_T1/LC09_L2SP_042023_20220825_20230401_02_T1/LC09_L2SP_042023_20220825_20230401_02_T1_QA_PIXEL.TIF")
+    for layer in mask_layers
+        @test all(get_landsat_mask(qa, layer) .== masks[layer])
+    end
 end
 
 @testset "Sentinel 2" begin
