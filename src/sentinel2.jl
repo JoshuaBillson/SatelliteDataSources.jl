@@ -120,7 +120,7 @@ function layer_source(::Type{Sentinel2{20}}, layer::Symbol)
 end
 
 function layer_source(::Type{Sentinel2{10}}, layer::Symbol)
-    band_regex(band) = "_" * exactly(1, string(band)) * "_20m." * either("TIF", "tif", "jp2") * END
+    band_regex(band) = "_" * exactly(1, string(band)) * "_10m." * either("TIF", "tif", "jp2") * END
 
     @match layer begin
         :B02 => File(band_regex(:B02))
