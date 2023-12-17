@@ -7,6 +7,16 @@ function test_colors(bandset::Type{<:AbstractSatellite}, colors)
     @test swir2_band(bandset) == colors[:swir2]
 end
 
+function test_dn_scale(bandset::Type{<:AbstractSatellite}, layers::Vector{Symbol}, scale::Float32)
+    scales = [dn_scale(bandset, layer) for layer in layers]
+    @test all(scales .== scale)
+end
+
+function test_dn_offset(bandset::Type{<:AbstractSatellite}, layers::Vector{Symbol}, offset::Float32)
+    offsets = [dn_offset(bandset, layer) for layer in layers]
+    @test all(offsets .== offset)
+end
+
 function test_layers(bandset::Type{<:AbstractSatellite}, answer_src::String, answer_key::String, data_src::String)
     answer = JSON.parsefile(answer_src)[answer_key]
     response = getlayers(bandset, data_src)

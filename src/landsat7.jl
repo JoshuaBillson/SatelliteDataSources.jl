@@ -25,16 +25,16 @@ swir2_band(::Type{Landsat7}) = :B7
 
 function dn_scale(::Type{Landsat7}, layer::Symbol)
     @match layer begin
-        :thermal1 || :thermal2 => 0.00341802f0
-        :B1 || :B2 || :B3 || :B4 || :B5 || :B6 || :B7 => 0.0000275f0
+        :thermal => 0.00341802f0
+        :B1 || :B2 || :B3 || :B4 || :B5 || :B7 => 0.0000275f0
         _ => 1.0f0
     end
 end
 
 function dn_offset(::Type{Landsat7}, layer::Symbol)
     @match layer begin
-        :thermal1 || :thermal2 => 149.0f0
-        :B1 || :B2 || :B3 || :B4 || :B5 || :B6 || :B7 => -0.2f0
+        :thermal => 149.0f0
+        :B1 || :B2 || :B3 || :B4 || :B5 || :B7 => -0.2f0
         _ => 0.0f0
     end
 end

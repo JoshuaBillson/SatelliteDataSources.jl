@@ -21,9 +21,14 @@ ENV["DATADEPS_LOAD_PATH"] = joinpath(pwd(), "data")
     @test all(bands(Landsat7) .== [:B1, :B2, :B3, :B4, :B5, :B7])
     @test all(layers(Landsat7) .== [:B1, :B2, :B3, :B4, :B5, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :panchromatic, :thermal, :dilated_clouds, :clouds, :cloud_shadow, :snow, :water])
     @test all(wavelengths(Landsat7) .== [483, 560, 660, 835, 1650, 2220])
+    test_dn_scale(Landsat7, [:B1, :B2, :B3, :B4, :B5, :B7], 0.0000275f0)
+    test_dn_scale(Landsat7, [:thermal], 0.00341802f0)
+    test_dn_offset(Landsat7, [:B1, :B2, :B3, :B4, :B5, :B7], -0.2f0)
+    test_dn_offset(Landsat7, [:thermal], 149.0f0)
 
     # Test Color Mapping
     colors = Dict([:blue => :B1, :green => :B2, :red => :B3, :nir => :B4, :swir1 => :B5, :swir2 => :B7])
+    test_colors(Landsat7, colors)
 
     # Test Layer Parsing
 
@@ -38,13 +43,32 @@ end
     @test all(bands(Landsat8) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7])
     @test all(layers(Landsat8) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :panchromatic, :thermal1, :thermal2, :dilated_clouds, :clouds, :cloud_shadow, :snow, :water])
     @test all(wavelengths(Landsat8) .== [443, 483, 560, 660, 865, 1650, 2220])
+    test_dn_scale(Landsat8, [:B1, :B2, :B3, :B4, :B5, :B6, :B7], 0.0000275f0)
+    test_dn_scale(Landsat8, [:thermal1, :thermal2], 0.00341802f0)
+    test_dn_offset(Landsat8, [:B1, :B2, :B3, :B4, :B5, :B6, :B7], -0.2f0)
+    test_dn_offset(Landsat8, [:thermal1, :thermal2], 149.0f0)
 
     # Test Color Mapping
     colors = Dict([:blue => :B2, :green => :B3, :red => :B4, :nir => :B5, :swir1 => :B6, :swir2 => :B7])
+    test_colors(Landsat8, colors)
 
     # Test Layer Parsing
-
-    # Test Raster
+    r1 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B1, lazy=true)
+    r2 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B2, lazy=true)
+    r3 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B3, lazy=true)
+    r4 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B4, lazy=true)
+    r5 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B5, lazy=true)
+    r6 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B6, lazy=true)
+    r7 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B7, lazy=true)
+    rt = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :thermal1, lazy=true)
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B1.TIF$", r1.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B2.TIF$", r2.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B3.TIF$", r3.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B4.TIF$", r4.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B5.TIF$", r5.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B6.TIF$", r6.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B7.TIF$", r7.metadata["filepath"]))
+    @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_ST_B10.TIF$", rt.metadata["filepath"]))
 end
 
 @testset "Landsat 9" begin
@@ -55,13 +79,32 @@ end
     @test all(bands(Landsat9) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7])
     @test all(layers(Landsat9) .== [:B1, :B2, :B3, :B4, :B5, :B6, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :panchromatic, :thermal1, :thermal2, :dilated_clouds, :clouds, :cloud_shadow, :snow, :water])
     @test all(wavelengths(Landsat9) .== [443, 483, 560, 660, 865, 1650, 2220])
+    test_dn_scale(Landsat9, [:B1, :B2, :B3, :B4, :B5, :B6, :B7], 0.0000275f0)
+    test_dn_scale(Landsat9, [:thermal1, :thermal2], 0.00341802f0)
+    test_dn_offset(Landsat9, [:B1, :B2, :B3, :B4, :B5, :B6, :B7], -0.2f0)
+    test_dn_offset(Landsat9, [:thermal1, :thermal2], 149.0f0)
 
     # Test Color Mapping
     colors = Dict([:blue => :B2, :green => :B3, :red => :B4, :nir => :B5, :swir1 => :B6, :swir2 => :B7])
+    test_colors(Landsat9, colors)
 
     # Test Layer Parsing
-
-    # Test Raster
+    r1 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B1, lazy=true)
+    r2 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B2, lazy=true)
+    r3 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B3, lazy=true)
+    r4 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B4, lazy=true)
+    r5 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B5, lazy=true)
+    r6 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B6, lazy=true)
+    r7 = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B7, lazy=true)
+    rt = Raster(Landsat8, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :thermal1, lazy=true)
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B1.TIF$", r1.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B2.TIF$", r2.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B3.TIF$", r3.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B4.TIF$", r4.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B5.TIF$", r5.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B6.TIF$", r6.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B7.TIF$", r7.metadata["filepath"]))
+    @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_ST_B10.TIF$", rt.metadata["filepath"]))
 end
 
 @testset "Sentinel 2" begin
@@ -72,18 +115,22 @@ end
     @test all(bands(Sentinel2{10}) .== [:B02, :B03, :B04, :B08])
     @test all(layers(Sentinel2{10}) .== [:B02, :B03, :B04, :B08, :blue, :green, :red, :nir])
     @test all(wavelengths(Sentinel2{10}) .== [490, 560, 665, 842])
+    test_dn_scale(Sentinel2{10}, [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12], 0.0001f0)
+    test_dn_offset(Sentinel2{10}, [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12], 0.0f0)
 
     # Test Specifications (20m)
     @test all(bands(Sentinel2{20}) .== [:B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B11, :B12])
     @test all(layers(Sentinel2{20}) .== [:B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B11, :B12, :blue, :green, :red, :nir, :swir1, :swir2, :cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :soil, :water, :snow])
     @test all(wavelengths(Sentinel2{20}) .== [490, 560, 665, 705, 740, 783, 865, 1610, 2190])
+    test_dn_scale(Sentinel2{20}, [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12], 0.0001f0)
+    test_dn_offset(Sentinel2{20}, [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12], 0.0f0)
 
     # Test Specifications (60m)
     @test all(bands(Sentinel2{60}) .== [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12])
     @test all(layers(Sentinel2{60}) .== [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12, :blue, :green, :red, :nir, :swir1, :swir2, :cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :soil, :water, :snow])
     @test all(wavelengths(Sentinel2{60}) .== [443, 490, 560, 665, 705, 740, 783, 865, 945, 1610, 2190])
-
-    # Test DN Specifications
+    test_dn_scale(Sentinel2{60}, [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12], 0.0001f0)
+    test_dn_offset(Sentinel2{60}, [:B01, :B02, :B03, :B04, :B05, :B06, :B07, :B8A, :B09, :B11, :B12], 0.0f0)
 
     # Test Resolution Requirement
     @test_throws ErrorException bands(Sentinel2)
