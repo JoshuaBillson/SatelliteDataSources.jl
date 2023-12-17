@@ -208,9 +208,25 @@ end
 
     # Test Masks
     mask_layers = [:cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :non_vegetated, :water, :snow]
-    masks = RasterStack(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", mask_layers)
-    scl = Raster("data/L2A_T11UPT_A017828_20200804T184659/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R20m/T11UPT_20200804T183919_SCL_20m.jp2")
+    masks20 = RasterStack(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", mask_layers)
+    masks60 = RasterStack(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", mask_layers)
+    scl20 = Raster("data/L2A_T11UPT_A017828_20200804T184659/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R20m/T11UPT_20200804T183919_SCL_20m.jp2")
+    scl60 = Raster("data/L2A_T11UPT_A017828_20200804T184659/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R60m/T11UPT_20200804T183919_SCL_60m.jp2")
     for layer in mask_layers
-        @test all(get_sentinel_mask(scl, layer) .== masks[layer])
+        @test all(get_sentinel_mask(scl20, layer) .== masks20[layer])
+        @test all(get_sentinel_mask(scl60, layer) .== masks60[layer])
+    end
+end
+
+@testset "Rasters" begin
+    # Load Test Data
+    register(DataDep("LC08_L2SP_043024_20200802_20200914_02_T1", """Landsat 8 Test Data""", landsat_link, landsat_hash, fetch_method=gdownload, post_fetch_method=unpack))
+
+    # Test Decode
+    original = RasterStack(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", [:B2, :B3, :B4])
+    decoded = decode(Landsat8, original)
+    encoded = encode(Landsat8, decoded)
+    for layer in [:B2, :B3, :B4]
+        @test all(original[layer] .== encoded[layer])
     end
 end
