@@ -1,5 +1,6 @@
 using SatelliteDataSources
 using Test, Fetch, JSON, Rasters, ArchGDAL, DataDeps
+using Match: @match
 
 include("utils.jl")
 
@@ -204,4 +205,12 @@ end
     @test !isnothing(match(r"T11UPT_20200804T183919_B03_10m.jp2$", r03.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B04_10m.jp2$", r04.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B08_10m.jp2$", r08.metadata["filepath"]))
+
+    # Test Masks
+    mask_layers = [:cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :non_vegetated, :water, :snow]
+    masks = RasterStack(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", mask_layers)
+    scl = Raster("data/L2A_T11UPT_A017828_20200804T184659/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R20m/T11UPT_20200804T183919_SCL_20m.jp2")
+    for layer in mask_layers
+        @test all(get_sentinel_mask(scl, layer) .== masks[layer])
+    end
 end

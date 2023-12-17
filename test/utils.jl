@@ -23,3 +23,16 @@ function test_layers(bandset::Type{<:AbstractSatellite}, answer_src::String, ans
     @test Set(bandnames(bandset)) == Set(keys(response))
     @test all([answer[k] == basename(response[Symbol(k)]) for k in keys(answer)])
 end
+
+function get_sentinel_mask(scl::Raster, layer::Symbol)
+    @match layer begin
+        :cloud_shadow => UInt8.(scl .== 0x03)
+        :vegetation => UInt8.(scl .== 0x04)
+        :non_vegetated => UInt8.(scl .== 0x05)
+        :water => UInt8.(scl .== 0x06)
+        :clouds_med => UInt8.(scl .== 0x08)
+        :clouds_high => UInt8.(scl .== 0x09)
+        :cirrus => UInt8.(scl .== 0x0a)
+        :snow => UInt8.(scl .== 0x0b)
+    end
+end
