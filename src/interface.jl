@@ -1,7 +1,16 @@
 """
-The supertype of all sensor types. Provides sensor-specific information to many `RemoteSensingToolbox` methods.
+The super-type of all satellites. 
+
+Sub-types must implement the `AbstractSatellite` interface.
 """
 abstract type AbstractSatellite end
+
+"""
+    files(x::AbstractSatellite)
+
+Return a list of files for the given satellite product.
+"""
+function files end
 
 """
     bands(::Type{AbstractSatellite})
@@ -86,6 +95,15 @@ dn_offset(::Type{<:AbstractSatellite}, layer::Symbol) = 0.0f0
 Retrieve the `AbstractLayerSource` for the given layer and sensor type.
 """
 function layer_source end
+
+"""
+    metadata(x::AbstractSatellite)
+
+Parses the metadata fields for the given satellite scene.
+
+Metadata varies between products, but typically includes the acquisition date and processing level.
+"""
+function metadata end
 
 """
     wavelength(::Type{AbstractSatellite}, band::Symbol)

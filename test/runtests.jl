@@ -4,8 +4,8 @@ using Match: @match
 
 include("utils.jl")
 
-const sentinel_link = "https://drive.google.com/file/d/1Q6LF2Hk49zSHgQqmdICBvjpp_dHIRyN5/view?usp=sharing"
-const sentinel_hash = "41cebfbc84b330d94abda5cc524de05aa15ac859cddca806aad9e9dc29abfbb9"
+const sentinel_link = "https://drive.google.com/file/d/1P7TSPf_GxYtyOYat3iIui1hbjvb7H6a0/view?usp=sharing"
+const sentinel_hash = "4135c6192a314e0d08d21cf44ca3cde0f34f1968854275e32656278ca163a3e0"
 const landsat_link = "https://drive.google.com/file/d/1S5H_oyWZZInOzJK4glBCr6LgXSADzhOV/view?usp=sharing"
 const landsat_hash = "2ce24abc359d30320213237d78101d193cdb8433ce21d1f7e9f08ca140cf5785"
 const landsat9_link = "https://drive.google.com/file/d/1PJ0zFqbmVZROwdprZfXrxz-TaVRSevMJ/view?usp=sharing"
@@ -54,14 +54,15 @@ end
     test_colors(Landsat8, colors)
 
     # Test Layer Parsing
-    r1 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B1, lazy=true)
-    r2 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B2, lazy=true)
-    r3 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B3, lazy=true)
-    r4 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B4, lazy=true)
-    r5 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B5, lazy=true)
-    r6 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B6, lazy=true)
-    r7 = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :B7, lazy=true)
-    rt = Raster(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", :thermal1, lazy=true)
+    landsat = Landsat8(datadep"LC08_L2SP_043024_20200802_20200914_02_T1")
+    r1 = Raster(landsat, :B1, lazy=true)
+    r2 = Raster(landsat, :B2, lazy=true)
+    r3 = Raster(landsat, :B3, lazy=true)
+    r4 = Raster(landsat, :B4, lazy=true)
+    r5 = Raster(landsat, :B5, lazy=true)
+    r6 = Raster(landsat, :B6, lazy=true)
+    r7 = Raster(landsat, :B7, lazy=true)
+    rt = Raster(landsat, :thermal1, lazy=true)
     @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B1.TIF$", r1.metadata["filepath"]))
     @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B2.TIF$", r2.metadata["filepath"]))
     @test !isnothing(match(r"LC08_L2SP_043024_20200802_20200914_02_T1_SR_B3.TIF$", r3.metadata["filepath"]))
@@ -73,11 +74,19 @@ end
 
     # Test Masks
     mask_layers = [:dilated_clouds, :clouds, :cloud_shadow, :snow, :water]
-    masks = RasterStack(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", mask_layers)
-    qa = Raster("data/LC08_L2SP_043024_20200802_20200914_02_T1/LC08_L2SP_043024_20200802_20200914_02_T1/LC08_L2SP_043024_20200802_20200914_02_T1_QA_PIXEL.TIF")
+    masks = RasterStack(landsat, mask_layers)
+    qa = Raster(datadep"LC08_L2SP_043024_20200802_20200914_02_T1/LC08_L2SP_043024_20200802_20200914_02_T1/LC08_L2SP_043024_20200802_20200914_02_T1_QA_PIXEL.TIF")
     for layer in mask_layers
         @test all(get_landsat_mask(qa, layer) .== masks[layer])
     end
+
+    # Test Metadata Parsing
+    md = SatelliteDataSources.metadata(landsat)
+    @test md["product"] == "LC08"
+    @test md["level"] == "L2SP"
+    @test md["collection"] == "02"
+    @test string(md["acquired"]) == "2020-08-02"
+    @test string(md["processed"]) == "2020-09-14"
 end
 
 @testset "Landsat 9" begin
@@ -98,14 +107,15 @@ end
     test_colors(Landsat9, colors)
 
     # Test Layer Parsing
-    r1 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B1, lazy=true)
-    r2 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B2, lazy=true)
-    r3 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B3, lazy=true)
-    r4 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B4, lazy=true)
-    r5 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B5, lazy=true)
-    r6 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B6, lazy=true)
-    r7 = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :B7, lazy=true)
-    rt = Raster(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", :thermal1, lazy=true)
+    src = Landsat9(datadep"LC09_L2SP_042023_20220825_20230401_02_T1")
+    r1 = Raster(src, :B1, lazy=true)
+    r2 = Raster(src, :B2, lazy=true)
+    r3 = Raster(src, :B3, lazy=true)
+    r4 = Raster(src, :B4, lazy=true)
+    r5 = Raster(src, :B5, lazy=true)
+    r6 = Raster(src, :B6, lazy=true)
+    r7 = Raster(src, :B7, lazy=true)
+    rt = Raster(src, :thermal1, lazy=true)
     @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B1.TIF$", r1.metadata["filepath"]))
     @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B2.TIF$", r2.metadata["filepath"]))
     @test !isnothing(match(r"LC09_L2SP_042023_20220825_20230401_02_T1_SR_B3.TIF$", r3.metadata["filepath"]))
@@ -117,16 +127,24 @@ end
 
     # Test Masks
     mask_layers = [:dilated_clouds, :clouds, :cloud_shadow, :snow, :water]
-    masks = RasterStack(Landsat9, datadep"LC09_L2SP_042023_20220825_20230401_02_T1", mask_layers)
-    qa = Raster("data/LC09_L2SP_042023_20220825_20230401_02_T1/LC09_L2SP_042023_20220825_20230401_02_T1/LC09_L2SP_042023_20220825_20230401_02_T1_QA_PIXEL.TIF")
+    masks = RasterStack(src, mask_layers)
+    qa = Raster(datadep"LC09_L2SP_042023_20220825_20230401_02_T1/LC09_L2SP_042023_20220825_20230401_02_T1/LC09_L2SP_042023_20220825_20230401_02_T1_QA_PIXEL.TIF")
     for layer in mask_layers
         @test all(get_landsat_mask(qa, layer) .== masks[layer])
     end
+
+    # Test Metadata Parsing
+    md = SatelliteDataSources.metadata(src)
+    @test md["product"] == "LC09"
+    @test md["level"] == "L2SP"
+    @test md["collection"] == "02"
+    @test string(md["acquired"]) == "2022-08-25"
+    @test string(md["processed"]) == "2023-04-01"
 end
 
 @testset "Sentinel 2" begin
     # Load Test Data
-    register(DataDep("L2A_T11UPT_A017828_20200804T184659", """Sentinel 2 Test Data""", sentinel_link, sentinel_hash, fetch_method=gdownload, post_fetch_method=unpack))
+    register(DataDep("S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343", """Sentinel 2 Test Data""", sentinel_link, sentinel_hash, fetch_method=gdownload, post_fetch_method=unpack))
 
     # Test Specifications (10m)
     @test all(bands(Sentinel2{10}) .== [:B02, :B03, :B04, :B08])
@@ -169,17 +187,18 @@ end
     test_colors(Sentinel2{60}, colors)
 
     # Test Layer Parsing (60m)
-    r01 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B01, lazy=true)
-    r02 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B02, lazy=true)
-    r03 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B03, lazy=true)
-    r04 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B04, lazy=true)
-    r05 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B05, lazy=true)
-    r06 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B06, lazy=true)
-    r07 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B07, lazy=true)
-    r8A = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B8A, lazy=true)
-    r09 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B09, lazy=true)
-    r11 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B11, lazy=true)
-    r12 = Raster(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", :B12, lazy=true)
+    sentinel_60 = Sentinel2{60}(datadep"S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343")
+    r01 = Raster(sentinel_60, :B01, lazy=true)
+    r02 = Raster(sentinel_60, :B02, lazy=true)
+    r03 = Raster(sentinel_60, :B03, lazy=true)
+    r04 = Raster(sentinel_60, :B04, lazy=true)
+    r05 = Raster(sentinel_60, :B05, lazy=true)
+    r06 = Raster(sentinel_60, :B06, lazy=true)
+    r07 = Raster(sentinel_60, :B07, lazy=true)
+    r8A = Raster(sentinel_60, :B8A, lazy=true)
+    r09 = Raster(sentinel_60, :B09, lazy=true)
+    r11 = Raster(sentinel_60, :B11, lazy=true)
+    r12 = Raster(sentinel_60, :B12, lazy=true)
     @test !isnothing(match(r"T11UPT_20200804T183919_B01_60m.jp2$", r01.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B02_60m.jp2$", r02.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B03_60m.jp2$", r03.metadata["filepath"]))
@@ -193,15 +212,16 @@ end
     @test !isnothing(match(r"T11UPT_20200804T183919_B12_60m.jp2$", r12.metadata["filepath"]))
 
     # Test Layer Parsing (20m)
-    r02 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B02, lazy=true)
-    r03 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B03, lazy=true)
-    r04 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B04, lazy=true)
-    r05 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B05, lazy=true)
-    r06 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B06, lazy=true)
-    r07 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B07, lazy=true)
-    r8A = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B8A, lazy=true)
-    r11 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B11, lazy=true)
-    r12 = Raster(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", :B12, lazy=true)
+    sentinel_20 = Sentinel2{20}(datadep"S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343")
+    r02 = Raster(sentinel_20, :B02, lazy=true)
+    r03 = Raster(sentinel_20, :B03, lazy=true)
+    r04 = Raster(sentinel_20, :B04, lazy=true)
+    r05 = Raster(sentinel_20, :B05, lazy=true)
+    r06 = Raster(sentinel_20, :B06, lazy=true)
+    r07 = Raster(sentinel_20, :B07, lazy=true)
+    r8A = Raster(sentinel_20, :B8A, lazy=true)
+    r11 = Raster(sentinel_20, :B11, lazy=true)
+    r12 = Raster(sentinel_20, :B12, lazy=true)
     @test !isnothing(match(r"T11UPT_20200804T183919_B02_20m.jp2$", r02.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B03_20m.jp2$", r03.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B04_20m.jp2$", r04.metadata["filepath"]))
@@ -213,10 +233,11 @@ end
     @test !isnothing(match(r"T11UPT_20200804T183919_B12_20m.jp2$", r12.metadata["filepath"]))
 
     # Test Layer Parsing (10m)
-    r02 = Raster(Sentinel2{10}, datadep"L2A_T11UPT_A017828_20200804T184659", :B02, lazy=true)
-    r03 = Raster(Sentinel2{10}, datadep"L2A_T11UPT_A017828_20200804T184659", :B03, lazy=true)
-    r04 = Raster(Sentinel2{10}, datadep"L2A_T11UPT_A017828_20200804T184659", :B04, lazy=true)
-    r08 = Raster(Sentinel2{10}, datadep"L2A_T11UPT_A017828_20200804T184659", :B08, lazy=true)
+    sentinel_10 = Sentinel2{10}(datadep"S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343")
+    r02 = Raster(sentinel_10, :B02, lazy=true)
+    r03 = Raster(sentinel_10, :B03, lazy=true)
+    r04 = Raster(sentinel_10, :B04, lazy=true)
+    r08 = Raster(sentinel_10, :B08, lazy=true)
     @test !isnothing(match(r"T11UPT_20200804T183919_B02_10m.jp2$", r02.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B03_10m.jp2$", r03.metadata["filepath"]))
     @test !isnothing(match(r"T11UPT_20200804T183919_B04_10m.jp2$", r04.metadata["filepath"]))
@@ -224,14 +245,21 @@ end
 
     # Test Masks
     mask_layers = [:cloud_shadow, :clouds_med, :clouds_high, :cirrus, :vegetation, :non_vegetated, :water, :snow]
-    masks20 = RasterStack(Sentinel2{20}, datadep"L2A_T11UPT_A017828_20200804T184659", mask_layers)
-    masks60 = RasterStack(Sentinel2{60}, datadep"L2A_T11UPT_A017828_20200804T184659", mask_layers)
-    scl20 = Raster("data/L2A_T11UPT_A017828_20200804T184659/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R20m/T11UPT_20200804T183919_SCL_20m.jp2")
-    scl60 = Raster("data/L2A_T11UPT_A017828_20200804T184659/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R60m/T11UPT_20200804T183919_SCL_60m.jp2")
+    masks20 = RasterStack(sentinel_20, mask_layers)
+    masks60 = RasterStack(sentinel_60, mask_layers)
+    scl20 = Raster(datadep"S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343/S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343/GRANULE/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R20m/T11UPT_20200804T183919_SCL_20m.jp2")
+    scl60 = Raster(datadep"S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343/S2B_MSIL2A_20200804T183919_N0214_R070_T11UPT_20200804T230343/GRANULE/L2A_T11UPT_A017828_20200804T184659/IMG_DATA/R60m/T11UPT_20200804T183919_SCL_60m.jp2")
     for layer in mask_layers
         @test all(get_sentinel_mask(scl20, layer) .== masks20[layer])
         @test all(get_sentinel_mask(scl60, layer) .== masks60[layer])
     end
+
+    # Test Metadata Parsing
+    md = SatelliteDataSources.metadata(sentinel_10)
+    @test md["mission"] == "S2B"
+    @test md["level"] == "L2A"
+    @test md["tile"] == "11UPT"
+    @test string(md["acquired"]) == "2020-08-04T18:39:19"
 end
 
 @testset "Rasters" begin
@@ -239,7 +267,8 @@ end
     register(DataDep("LC08_L2SP_043024_20200802_20200914_02_T1", """Landsat 8 Test Data""", landsat_link, landsat_hash, fetch_method=gdownload, post_fetch_method=unpack))
 
     # Test Decode
-    original = RasterStack(Landsat8, datadep"LC08_L2SP_043024_20200802_20200914_02_T1", [:B2, :B3, :B4])
+    landsat = Landsat8(datadep"LC08_L2SP_043024_20200802_20200914_02_T1")
+    original = RasterStack(landsat, [:B2, :B3, :B4])
     decoded = decode(Landsat8, original)
     encoded = encode(Landsat8, decoded)
     for layer in [:B2, :B3, :B4]

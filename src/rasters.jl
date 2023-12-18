@@ -1,23 +1,22 @@
 """
-    Raster(s::Type{AbstractSatellite}, dir::String, layer::Symbol; kwargs...)
+    Raster(s::AbstractSatellite, dir::String, layer::Symbol; kwargs...)
 
 Read a single layer into a `Rasters.Raster`.
 
 # Parameters
-- `s`: The `AbstractSatellite` that produced the raster(s) in question.
+- `x`: The `AbstractSatellite` that produced the raster(s) in question.
 - `dir`: The directory containing the satellite layers.
 - `layer`: The layer to be read. See `layers(s)` for a list of available layers for sensor `s`.
 """
-function Rasters.Raster(::Type{T}, dir::String, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
+function Rasters.Raster(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
     layer = _translate_color(T, layer)
-    source = layer_source(T, layer)
-    return _read_layer(source, dir, layer; kwargs...)
+    return _read_layer(x, layer; kwargs...)
 end
 
-function Rasters.RasterStack(::Type{T}, dir::String, layers=bands(T); kwargs...) where {T <: AbstractSatellite}
+function Rasters.RasterStack(x::T, layers=bands(T); kwargs...) where {T <: AbstractSatellite}
     layers isa Vector{Symbol} || throw(ArgumentError("`layers` must be a `Vector{Symbol}`!"))
     layers = map(x -> _translate_color(T, x), layers)
-    rasters = [Rasters.Raster(T, dir, layer; kwargs...) for layer in layers]
+    rasters = [Rasters.Raster(x, layer; kwargs...) for layer in layers]
     return Rasters.RasterStack(NamedTuple{Tuple(layers)}(rasters); kwargs...)
 end
 
@@ -89,8 +88,9 @@ function _read_source(src::BitField, file::String, layer::Symbol; kwargs...)
     return Rasters.rebuild(new_raster, missingval=0x00, name=layer)
 end
 
-function _read_layer(src, dir::String, layer::Symbol; kwargs...)
-    for file in _get_files(dir)
+function _read_layer(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
+    src = layer_source(T, layer)
+    for file in files(x)
         if !isnothing(match(src.regex, file))
             return _read_source(src, file, layer; kwargs...)
         end

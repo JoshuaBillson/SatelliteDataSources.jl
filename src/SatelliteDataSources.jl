@@ -17,8 +17,8 @@ include("rasters.jl")
 
 export AbstractLayerSource, File, BitField, Band
 export AbstractSatellite, Landsat7, Landsat8, Landsat9, Sentinel2, DESIS
-export bands, layers, wavelength, wavelengths, blue_band, green_band, red_band, nir_band, swir1_band, swir2_band, dn_scale, dn_offset, layer_source
-export decode, encode
+export files, bands, layers, wavelength, wavelengths, blue_band, green_band, red_band, nir_band, swir1_band, swir2_band, dn_scale, dn_offset, layer_source
+export decode, encode, metadata
 export Raster
 
 end

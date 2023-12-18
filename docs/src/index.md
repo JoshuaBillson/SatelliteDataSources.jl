@@ -24,6 +24,7 @@ Sentinel2
 # User Interface
 
 ```@docs
+files
 bands
 layers
 wavelengths
@@ -38,6 +39,7 @@ dn_scale
 dn_offset
 decode
 encode
+metadata
 Rasters.Raster
 ```
 

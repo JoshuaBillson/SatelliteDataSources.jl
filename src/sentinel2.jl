@@ -1,15 +1,25 @@
 """
 Implements the `AbstractSatellite` interface for Sentinel 2.
-The user must specify a resolution of eith 10, 20, or 60 meters.
 
-**Supported Layers (10m):** `:B02`, `:B03`, `:B04`, `:B08`, `:blue`, `:green`, `:red`, `:nir`  
+The user must specify a resolution of 10, 20, or 60 meters.
 
-**Supported Layers (20m):** `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B11`, `:B12`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:cloud_shadow`, `:clouds_med`, `:clouds_high`, `:cirrus`, `:vegetation`, `:soil`, `:water`, `:snow`  
+**Supported Bands (10m):** `:B02`, `:B03`, `:B04`, `:B08`
 
-**Supported Layers (60m):** `:B01`, `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B09`, `:B11`, `:B12`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:cloud_shadow`, `:clouds_med`, `:clouds_high`, `:cirrus`, `:vegetation`, `:soil`, `:water`, `:snow`  
+**Supported Bands (20m):** `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B11`, `:B12`
 
+**Supported Bands (60m):** `:B01`, `:B02`, `:B03`, `:B04`, `:B05`, `:B06`, `:B07`, `:B8A`, `:B09`, `:B11`, `:B12`
+
+**Supported Colors (10m):** `:blue`, `:green`, `:red`, `:nir`  
+
+**Supported Colors (20m and 60m):** `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`  
+
+**Supported Masks (20m and 60m):** `:cloud_shadow`, `:clouds_med`, `:clouds_high`, `:cirrus`, `:vegetation`, `:soil`, `:water`, `:snow`  
 """
-struct Sentinel2{R} <: AbstractSatellite end
+struct Sentinel2{R} <: AbstractSatellite 
+    src::String
+end
+
+files(x::Sentinel2) = _get_files(x.src)
 
 bands(::Type{<:Sentinel2}) = error("Error: Must specify spatial resolution for Sentinel 2!")
 
@@ -130,4 +140,27 @@ function layer_source(::Type{Sentinel2{10}}, layer::Symbol)
         :B08 => File(band_regex(:B08))
         _ => error("Sentinel2{10} does not support layer :$(layer)!")
     end
+end
+
+function metadata(x::Sentinel2)
+    # Build Regex
+    mission_pattern = capture(("S2A", "S2B"), as="mission")
+    level_pattern = rs"MSI" * capture(exactly(3, WORD), as="level")
+    acquisition_date_pattern = capture(exactly(8, DIGIT) * "T" * exactly(6, DIGIT), as="acquired")
+    tile_pattern = rs"T" * capture(rs"\w{5}", as="tile")
+    regex = mission_pattern * "_" * level_pattern * rs"_" * acquisition_date_pattern * rs"_N\d{4}_R\d{3}_" * tile_pattern
+
+
+    # Parse Data From File
+    m = match(regex, x.src)
+
+    # Return Metadata
+    if !isnothing(m)
+        return OrderedDict( 
+            "mission" => m["mission"], 
+            "level" => m["level"], 
+            "tile" => m["tile"], 
+            "acquired" => DateTime(m["acquired"], dateformat"yyyymmddTHHMMSS") )
+    end
+    return OrderedDict{String, Any}()
 end

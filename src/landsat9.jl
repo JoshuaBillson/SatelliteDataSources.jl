@@ -1,9 +1,17 @@
 """
 Implements the `AbstractSatellite` interface for Landsat 9.
 
-**Supported Layers:** `:B1`, `:B2`, `:B3`, `:B4`, `:B5`, `:B6`, `:B7`, `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`, `:panchromatic`, `:thermal1`, `:thermal2`, `:dilated_clouds`, `:clouds`, `:cloud_shadow`, `:snow`, `:water`
+**Supported Layers:** `:B1`, `:B2`, `:B3`, `:B4`, `:B5`, `:B6`, `:B7`, `:thermal1`, `:thermal2`, `:panchromatic`
+
+**Supported Colors:** `:blue`, `:green`, `:red`, `:nir`, `:swir1`, `:swir2`
+
+**Supported Masks:** `:dilated_clouds`, `:clouds`, `:cloud_shadow`, `:snow`, `:water`
 """
-struct Landsat9 <: AbstractSatellite end
+struct Landsat9 <: AbstractSatellite 
+    src::String
+end
+
+files(x::Landsat9) = _get_files(x.src)
 
 bands(::Type{Landsat9}) = [:B1, :B2, :B3, :B4, :B5, :B6, :B7]
 
@@ -60,4 +68,28 @@ function layer_source(::Type{Landsat9}, layer::Symbol)
         :water => BitField(qa_regex, 8)
         _ => error("Landsat9 does not support layer :$(layer)!")
     end
+end
+
+function metadata(x::Landsat9)
+    # Build Regex
+    sensor_pattern = capture(rs"L" * ("C", "O", "T", "E", "M") * exactly(2, DIGIT), as="product")
+    level_pattern = capture(rs"L" * DIGIT * exactly(2, WORD), as="level")
+    acquisition_date_pattern = capture(exactly(8, DIGIT), as="acquired")
+    processing_date_pattern = capture(exactly(8, DIGIT), as="processed")
+    collection_pattern = capture(("01", "02"), as="collection")
+    regex = sensor_pattern * "_" * level_pattern * rs"_\d{6}_" * acquisition_date_pattern * "_" * processing_date_pattern * "_" * collection_pattern
+
+    # Parse Data From File
+    m = match(regex, x.src)
+
+    # Return Metadata
+    if !isnothing(m)
+        return OrderedDict( 
+            "product" => m["product"], 
+            "level" => m["level"], 
+            "acquired" => Date(m["acquired"], "yyyymmdd"), 
+            "processed" => Date(m["processed"], "yyyymmdd"), 
+            "collection" => m["collection"] )
+    end
+    return OrderedDict{String, Any}()
 end
