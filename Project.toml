@@ -4,7 +4,6 @@ authors = ["Joshua Billson"]
 version = "0.0.1"
 
 [deps]
-ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Match = "7eb4fadd-790c-5f42-8a69-bfa0b872bfbf"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
@@ -13,7 +12,6 @@ Rasters = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 ReadableRegex = "cbbcb084-453d-4c4c-b292-e315607ba6a4"
 
 [compat]
-ArchGDAL = "0.10"
 OrderedCollections = "1"
 Pipe = "1"
 ReadableRegex = "0.3"

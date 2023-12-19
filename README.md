@@ -13,7 +13,7 @@ encoding, band wavelength, and band color. For details on supported satellites, 
 # Example
 
 ```julia
-using Rasters, SatelliteDataSources, DataDeps, Fetch
+using ArchGDAL, Rasters, SatelliteDataSources, DataDeps, Fetch
 
 # Download Landsat 8 Scene From Google Drive
 landsat_link = "https://drive.google.com/file/d/1S5H_oyWZZInOzJK4glBCr6LgXSADzhOV/view?usp=sharing"

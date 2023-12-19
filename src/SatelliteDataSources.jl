@@ -1,7 +1,7 @@
 module SatelliteDataSources
 
 using ReadableRegex, OrderedCollections, Dates
-import Rasters, ArchGDAL
+import Rasters
 using Pipe: @pipe
 using Match: @match
 
