@@ -41,6 +41,7 @@ decode
 encode
 metadata
 Rasters.Raster
+Rasters.RasterStack
 ```
 
 # Layer Sources
@@ -59,29 +60,40 @@ layer_source
 # Example
 
 ```julia
-using Rasters, SatelliteDataSources
+using Rasters, SatelliteDataSources, DataDeps, Fetch
 
-# Path to Satellite Product
-src = "data/LC08_L2SP_043024_20200802_20200914_02_T1"
+# Download Landsat 8 Scene From Google Drive
+landsat_link = "https://drive.google.com/file/d/1S5H_oyWZZInOzJK4glBCr6LgXSADzhOV/view?usp=sharing"
+landsat_hash = "2ce24abc359d30320213237d78101d193cdb8433ce21d1f7e9f08ca140cf5785"
+register(
+    DataDep(
+        "LC08_L2SP_043024_20200802_20200914_02_T1", 
+        "Landsat 8 Test Data", 
+        landsat_link, 
+        landsat_hash, 
+        fetch_method=gdownload, 
+        post_fetch_method=unpack
+    )
+)
+
+# Place Scene in a Landsat8 Context
+src = Landsat8(datadep"LC08_L2SP_043024_20200802_20200914_02_T1")
 
 # Load the Blue, Green, Red, and NIR Bands
-stack = RasterStack(Landsat8, src, [:blue, :green, :red, :nir], lazy=true)
+stack = RasterStack(src, [:blue, :green, :red, :nir], lazy=true)
 
-# Mask Clouds
-cloud_mask = Raster(Landsat8, src, :clouds) 
-shadow_mask = Raster(Landsat8, src, :cloud_shadow) 
+# Mask Clouds and Cloud Shadow
+cloud_mask = Raster(src, :clouds) 
+shadow_mask = Raster(src, :cloud_shadow) 
 raster_mask = .!(boolmask(cloud_mask) .|| boolmask(shadow_mask))
 masked_stack = mask(stack, with=raster_mask)
 
 # Save Processed Data as a Multiband Raster
 masked_raster = Raster(masked_stack)
-write("data/masked_bands.tif", masked_raster)
-
+write("masked_bands.tif", masked_raster)
 ```
 
 # Index
-
-Documentation for [SatelliteDataSources](https://github.com/JoshuaBillson/SatelliteDataSources.jl).
 
 ```@index
 ```

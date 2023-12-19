@@ -1,18 +1,28 @@
 """
-    Raster(s::AbstractSatellite, dir::String, layer::Symbol; kwargs...)
+    Raster(x::AbstractSatellite, layer::Symbol; kwargs...)
 
 Read a single layer into a `Rasters.Raster`.
 
 # Parameters
-- `x`: The `AbstractSatellite` that produced the raster(s) in question.
-- `dir`: The directory containing the satellite layers.
+- `x`: An `AbstractSatellite` from which to read a layer.
 - `layer`: The layer to be read. See `layers(s)` for a list of available layers for sensor `s`.
+- `kwargs`: Refer to the `Rasters.Raster` [documentation](https://rafaqz.github.io/Rasters.jl/dev/reference/#Rasters.Raster) for a summary of supported keywords.
 """
 function Rasters.Raster(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
     layer = _translate_color(T, layer)
     return _read_layer(x, layer; kwargs...)
 end
 
+"""
+    RasterStack(x::AbstractSatellite, layers=bands(T); kwargs...)
+
+Read multiple layers into a `Rasters.RasterStack`.
+
+# Parameters
+- `x`: An `AbstractSatellite` from which to read a layer.
+- `layer`: The layer to be read. See `layers(s)` for a list of available layers for sensor `s`.
+- `kwargs`: Refer to the `Rasters.RasterStack` [documentation](https://rafaqz.github.io/Rasters.jl/dev/reference/#Rasters.RasterStack) for a summary of supported keywords.
+"""
 function Rasters.RasterStack(x::T, layers=bands(T); kwargs...) where {T <: AbstractSatellite}
     layers isa Vector{Symbol} || throw(ArgumentError("`layers` must be a `Vector{Symbol}`!"))
     layers = map(x -> _translate_color(T, x), layers)
