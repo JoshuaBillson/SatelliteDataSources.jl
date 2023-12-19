@@ -14,6 +14,23 @@ const landsat9_hash = "78db0f61d8b2ba09d9238d2a14887e1692cf410dab9f0c15356806b1f
 ENV["DATADEPS_ALWAYS_ACCEPT"] = true
 ENV["DATADEPS_LOAD_PATH"] = joinpath(pwd(), "data")
 
+@testset "Interface" begin
+    struct DummySatellite <: AbstractSatellite end
+    @test_throws MethodError bands(DummySatellite)
+    @test_throws MethodError layers(DummySatellite)
+    @test_throws MethodError wavelengths(DummySatellite)
+    @test_throws MethodError layer_source(DummySatellite, :foo)
+    @test_throws MethodError SatelliteDataSources.metadata(DummySatellite())
+    @test_throws ErrorException blue_band(DummySatellite)
+    @test_throws ErrorException green_band(DummySatellite)
+    @test_throws ErrorException red_band(DummySatellite)
+    @test_throws ErrorException nir_band(DummySatellite)
+    @test_throws ErrorException swir1_band(DummySatellite)
+    @test_throws ErrorException swir2_band(DummySatellite)
+    @test dn_scale(DummySatellite, :foo) == 1.0f0
+    @test dn_offset(DummySatellite, :foo) == 0.0f0
+end
+
 @testset "Landsat 7" begin
     # Load Test Data
     register(DataDep("LC08_L2SP_043024_20200802_20200914_02_T1", """Landsat 8 Test Data""", landsat_link, landsat_hash, fetch_method=gdownload, post_fetch_method=unpack))
