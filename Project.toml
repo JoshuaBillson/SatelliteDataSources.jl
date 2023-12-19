@@ -12,6 +12,7 @@ Rasters = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 ReadableRegex = "cbbcb084-453d-4c4c-b292-e315607ba6a4"
 
 [compat]
+Match = "2"
 OrderedCollections = "1"
 Pipe = "1"
 Rasters = "0.10"
