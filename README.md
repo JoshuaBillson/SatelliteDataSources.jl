@@ -5,10 +5,7 @@
 [![Build Status](https://github.com/JoshuaBillson/SatelliteDataSources.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JoshuaBillson/SatelliteDataSources.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/JoshuaBillson/SatelliteDataSources.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JoshuaBillson/SatelliteDataSources.jl)
 
-[SatelliteDataSources](https://github.com/JoshuaBillson/SatelliteDataSources.jl) is a pure Julia package built on top of [Rasters.jl](https://github.com/rafaqz/Rasters.jl) for reading and manipulating satellite imagery. Each 
-`AbstractSatellite` provides a set of layers that can be conveniently read into either a `Raster` or `RasterStack`.
-Additionally, all `AbstractSatellite` types define a collection of sensor-specific information, such digital number
-encoding, band wavelength, and band color. For details on supported satellites, please refer to the [Docs](https://JoshuaBillson.github.io/SatelliteDataSources.jl/stable/).
+[SatelliteDataSources](https://github.com/JoshuaBillson/SatelliteDataSources.jl) is a pure Julia package built on top of [Rasters.jl](https://github.com/rafaqz/Rasters.jl) for reading satellite imagery. Most functionality is built around the `AbstractSatellite` type, which is used to encode sensor-specific information by exploiting Julia's multiple dispatch mechanism. For example, methods specialized on the `Landsat8` struct knows which bands correspond to colors like `:red` or `:green`, how to convert digital numbers to reflectance or kelvin, and how to read the `:clouds` mask from the included QA file. In particular, this package aims to abstract the details of retrieving a specific layer of a remote sensing product, such that the user can simply request whatever layers they want and trust that the details will be automatically inferred from the sensor type. For a complete list of supported satellites, please refer to the [Docs](https://JoshuaBillson.github.io/SatelliteDataSources.jl/stable/).
 
 # Example
 
