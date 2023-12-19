@@ -1,7 +1,7 @@
 name = "SatelliteDataSources"
 uuid = "104c01f3-edb2-4478-93b7-cdaa98dd5680"
 authors = ["Joshua Billson"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
