@@ -42,6 +42,7 @@ Typically, the decoded values will be in either reflectance (visual bands) or Ke
 - `raster`: Either a `Rasters.Raster` or `Rasters.RasterStack` to be decoded.
 """
 function decode(::Type{T}, raster::Rasters.AbstractRaster) where {T <: AbstractSatellite} 
+    raster = _efficient_read(raster)
     scale = dn_scale(T, raster.name)
     offset = dn_offset(T, raster.name)
     decoded_raster = Rasters.rebuild((raster .* scale) .+ offset, name=raster.name)
@@ -105,7 +106,7 @@ function _read_layer(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatelli
             return _read_source(src, file, layer; kwargs...)
         end
     end
-    error("Could not find layer :$(layer) in the directory \"$(dir)\"")
+    error("Could not find layer :$(layer) in the provided directory.")
 end
 
 function _translate_color(::Type{T}, layer::Symbol) where {T <: AbstractSatellite}
@@ -118,4 +119,12 @@ function _translate_color(::Type{T}, layer::Symbol) where {T <: AbstractSatellit
         :swir2 => swir2_band(T)
         _ => layer
     end
+end
+
+function _efficient_read(r::Rasters.AbstractRaster)
+    return r.data isa Array ? r : read(r)
+end
+
+function _efficient_read(r::Rasters.AbstractRasterStack)
+    return map(x -> efficient_read(x), r)
 end
