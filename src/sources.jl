@@ -56,6 +56,18 @@ end
 Base.match(x::Band, str) = !isnothing(Base.match(x.regex, str))
 
 """
+A layer composed of the union of two other layers.  
+
+An example is a cloud mask expressed as the union of a cloud-over-water mask and a cloud-over-land mask.
+"""
+struct UnionLayer{A,B} <: AbstractLayerSource
+    a::A
+    b::B
+end
+
+Base.match(x::UnionLayer, str) = !isnothing(Base.match(x.a, str)) || !isnothing(Base.match(x.b, str))
+
+"""
     parse_file(x::AbstractLayerSource, files::Vector{String})
 
 Returns the first file that matches the provided `AbstractLayerSource` from a list of files.
@@ -69,4 +81,9 @@ function parse_file(x::AbstractLayerSource, files::Vector{String})
         end
     end
     return nothing
+end
+
+function parse_file(x::UnionLayer, files::Vector{String})
+    matched = (a=parse_file(x.a, files), b=parse_file(x.b, files))
+    return (isnothing(matched.a) || isnothing(matched.b)) ? nothing : matched
 end

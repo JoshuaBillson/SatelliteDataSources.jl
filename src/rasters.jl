@@ -82,8 +82,10 @@ function _read_source(src::File, file::String, layer::Symbol; kwargs...)
     return Rasters.Raster(file; name=layer, kwargs...)
 end
 
-function _read_source(src::Band, file::String, layer::Symbol; kwargs...)
-    return @view Rasters.Raster(file; kwargs...)[Rasters.Band(src.band)]
+function _read_source(src::Band, file::String, layer::Symbol; lazy=false, kwargs...)
+    raster = Rasters.Raster(file; kwargs..., lazy=true)
+    band = @view raster[Rasters.Band(src.band)]
+    return lazy ? Rasters.rebuild(band, name=layer) : Rasters.rebuild(Rasters.read(band), name=layer)
 end
 
 function _read_source(src::MaskValue, file::String, layer::Symbol; kwargs...)
@@ -97,6 +99,12 @@ function _read_source(src::BitField, file::String, layer::Symbol; kwargs...)
     n = sizeof(eltype(raster)) * 8  # Number of bits
     new_raster = _read_bit(raster, src.bit, bits=n)
     return Rasters.rebuild(new_raster, missingval=0x00, name=layer)
+end
+
+function _read_source(src::UnionLayer, file::NamedTuple{(:a, :b), Tuple{String, String}}, layer::Symbol; kwargs...)
+    raster_a = _read_source(src.a, file.a, :A; kwargs...)
+    raster_b = _read_source(src.b, file.b, :B; kwargs...)
+    return raster_a .| raster_b
 end
 
 function _read_layer(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatellite}

@@ -32,9 +32,6 @@ ENV["DATADEPS_LOAD_PATH"] = joinpath(pwd(), "data")
 end
 
 @testset "Landsat 7" begin
-    # Load Test Data
-    register(DataDep("LC08_L2SP_043024_20200802_20200914_02_T1", """Landsat 8 Test Data""", landsat_link, landsat_hash, fetch_method=gdownload, post_fetch_method=unpack))
-
     # Test Specifications
     @test all(bands(Landsat7) .== [:B1, :B2, :B3, :B4, :B5, :B7])
     @test all(layers(Landsat7) .== [:B1, :B2, :B3, :B4, :B5, :B7, :blue, :green, :red, :nir, :swir1, :swir2, :panchromatic, :thermal, :dilated_clouds, :clouds, :cloud_shadow, :snow, :water])
@@ -277,6 +274,29 @@ end
     @test md["level"] == "L2A"
     @test md["tile"] == "11UPT"
     @test string(md["acquired"]) == "2020-08-04T18:39:19"
+end
+
+@testset "DESIS" begin
+    # Test Specifications
+    @test all(bands(DESIS) .== [Symbol("Band_$i") for i in 1:235])
+    @test all(layers(DESIS) .== [:Bands, :Band_30, :Band_65, :Band_100, :Band_175, :blue, :green, :red, :nir, :clouds, :shadow, :haze, :snow, :land, :water])
+    @test all(wavelengths(DESIS) .== collect(LinRange(401.25, 998.75, 235)))
+    test_dn_scale(DESIS, vcat([:Bands], bands(DESIS)), 0.0001f0)
+    test_dn_scale(DESIS, [:clouds, :shadow, :haze, :snow, :land, :water], 1.0f0)
+    test_dn_offset(DESIS, layers(DESIS), 0.0f0)
+
+    # Test Color Mapping
+    @test blue_band(DESIS) == :Band_30
+    @test green_band(DESIS) == :Band_65
+    @test red_band(DESIS) == :Band_100
+    @test nir_band(DESIS) == :Band_175
+
+    # Test Metadata Parsing
+    desis = DESIS("DESIS-HSI-L2A-DT0483531728_001-20200804T234520-V0210")
+    md = SatelliteDataSources.metadata(desis)
+    @test md["level"] == "L2A"
+    @test string(md["acquired"]) == "2020-08-04T23:45:20"
+    @test md["processor version"] == "V0210"
 end
 
 @testset "Rasters" begin

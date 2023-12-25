@@ -19,6 +19,7 @@ Landsat7
 Landsat8
 Landsat9
 Sentinel2
+DESIS
 ```
 
 # User Interface
@@ -55,6 +56,7 @@ File
 Band
 MaskValue
 BitField
+UnionLayer
 layer_source
 parse_file
 ```
