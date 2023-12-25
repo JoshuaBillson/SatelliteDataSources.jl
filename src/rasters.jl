@@ -9,7 +9,7 @@ Read a single layer into a `Rasters.Raster`.
 - `kwargs`: Refer to the `Rasters.Raster` [documentation](https://rafaqz.github.io/Rasters.jl/dev/reference/#Rasters.Raster) for a summary of supported keywords.
 """
 function Rasters.Raster(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
-    layer = _translate_color(T, layer)
+    layer = translate_color(T, layer)
     return _read_layer(x, layer; kwargs...)
 end
 
@@ -25,7 +25,7 @@ Read multiple layers into a `Rasters.RasterStack`.
 """
 function Rasters.RasterStack(x::T, layers=bands(T); kwargs...) where {T <: AbstractSatellite}
     layers isa Vector{Symbol} || throw(ArgumentError("`layers` must be a `Vector{Symbol}`!"))
-    layers = map(x -> _translate_color(T, x), layers)
+    layers = map(x -> translate_color(T, x), layers)
     rasters = [Rasters.Raster(x, layer; kwargs...) for layer in layers]
     return Rasters.RasterStack(NamedTuple{Tuple(layers)}(rasters); kwargs...)
 end
@@ -101,24 +101,11 @@ end
 
 function _read_layer(x::T, layer::Symbol; kwargs...) where {T <: AbstractSatellite}
     src = layer_source(T, layer)
-    for file in files(x)
-        if !isnothing(match(src.regex, file))
-            return _read_source(src, file, layer; kwargs...)
-        end
+    file = parse_file(src, files(x))
+    if !isnothing(file)
+        return _read_source(src, file, layer; kwargs...)
     end
     error("Could not find layer :$(layer) in the provided directory.")
-end
-
-function _translate_color(::Type{T}, layer::Symbol) where {T <: AbstractSatellite}
-    @match layer begin
-        :blue => blue_band(T)
-        :green => green_band(T)
-        :red => red_band(T)
-        :nir => nir_band(T)
-        :swir1 => swir1_band(T)
-        :swir2 => swir2_band(T)
-        _ => layer
-    end
 end
 
 function _efficient_read(r::Rasters.AbstractRaster)

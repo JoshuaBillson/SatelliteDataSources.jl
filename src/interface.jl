@@ -21,8 +21,19 @@ function bands end
 
 """
     layers(::Type{AbstractSatellite})
+    layers(x::AbstractSatellite)
 
 Return the names of all layers available for the given sensor.
+
+# Example
+```julia
+# Get all Available Layers for Landsat 8
+landsat_layers = layers(Landsat8)
+
+# Get all Available Layers for a Specific Scene
+src = Landsat8("LC08_L2SP_043024_20200802_20200914_02_T1")
+available_layers = layers(src)
+```
 """
 function layers end
 
@@ -113,4 +124,51 @@ Return the central wavelength for the corresponding band.
 function wavelength(::Type{T}, band::Symbol) where {T <: AbstractSatellite}
     !(band in bandnames(T)) && throw(ArgumentError("$band not found in bands $(bandnames(T))!"))
     return @pipe findfirst(isequal(band), bandnames(T)) |> wavelengths(T)[_]
+end
+
+function layers(x::T) where {T <: AbstractSatellite}
+    sources = [(layer, layer_source(T, translate_color(T, layer))) for layer in layers(T)]
+    return [layer for (layer, src) in sources if !isnothing(parse_file(src, files(x)))]
+end
+
+"""
+    translate_color(::Type{AbstractSatellite}, layer::Symbol)
+
+Translates a color such as `:red`, `:green`, or `:blue` to the corresponding band name.
+
+# Example
+```julia
+julia> translate_color(Landsat8, :red)
+:B4
+
+julia> translate_color(Sentinel2{10}, :nir)
+:B08
+
+julia> translate_color(Sentinel2{20}, :nir)
+:B8A
+```
+"""
+function translate_color(::Type{T}, layer::Symbol) where {T <: AbstractSatellite}
+    @match layer begin
+        :blue => blue_band(T)
+        :green => green_band(T)
+        :red => red_band(T)
+        :nir => nir_band(T)
+        :swir1 => swir1_band(T)
+        :swir2 => swir2_band(T)
+        _ => layer
+    end
+end
+
+function Base.show(io::IO, ::MIME"text/plain", x::T) where T <: AbstractSatellite
+    printstyled(io, "$T(")
+    printstyled(io, "\"$(x.src)\"", color=:black)
+    printstyled(io, ")")
+    for (k, v) in metadata(x)
+        printstyled(io, "\n  $k", color=:red)
+        printstyled(io, " $v")
+    end
+    if isempty(metadata(x))
+        printstyled(io, "\n  No Metadata", color=:red)
+    end
 end

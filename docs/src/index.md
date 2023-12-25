@@ -40,6 +40,7 @@ dn_offset
 decode
 encode
 metadata
+translate_color
 Rasters.Raster
 Rasters.RasterStack
 ```
@@ -55,6 +56,7 @@ Band
 MaskValue
 BitField
 layer_source
+parse_file
 ```
 
 # Example
