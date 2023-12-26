@@ -122,8 +122,8 @@ function metadata end
 Return the central wavelength for the corresponding band.
 """
 function wavelength(::Type{T}, band::Symbol) where {T <: AbstractSatellite}
-    !(band in bandnames(T)) && throw(ArgumentError("$band not found in bands $(bandnames(T))!"))
-    return @pipe findfirst(isequal(band), bandnames(T)) |> wavelengths(T)[_]
+    !(band in bands(T)) && throw(ArgumentError("$band not found in bands $(bands(T))!"))
+    return @pipe findfirst(isequal(band), bands(T)) |> wavelengths(T)[_]
 end
 
 function layers(x::T) where {T <: AbstractSatellite}

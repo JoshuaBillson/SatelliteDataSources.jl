@@ -17,13 +17,6 @@ function test_dn_offset(bandset::Type{<:AbstractSatellite}, layers::Vector{Symbo
     @test all(offsets .== offset)
 end
 
-function test_layers(bandset::Type{<:AbstractSatellite}, answer_src::String, answer_key::String, data_src::String)
-    answer = JSON.parsefile(answer_src)[answer_key]
-    response = getlayers(bandset, data_src)
-    @test Set(bandnames(bandset)) == Set(keys(response))
-    @test all([answer[k] == basename(response[Symbol(k)]) for k in keys(answer)])
-end
-
 function get_sentinel_mask(scl::Raster, layer::Symbol)
     @match layer begin
         :cloud_shadow => UInt8.(scl .== 0x03)

@@ -13,11 +13,17 @@ end
 
 files(x::DESIS) = _get_files(x.src)
 
-bands(::Type{DESIS}) = Symbol.(["Band_$i" for i in 1:235])
+@generated function bands(::Type{DESIS})
+    bandnames = Symbol.(["Band_$i" for i in 1:235])
+    return :($bandnames)
+end
 
 layers(::Type{DESIS}) = [:Bands, :Band_30, :Band_65, :Band_100, :Band_175, :blue, :green, :red, :nir, :clouds, :shadow, :haze, :snow, :land, :water]
 
-wavelengths(::Type{DESIS}) = collect(LinRange(401.25, 998.75, 235))
+@generated function wavelengths(::Type{DESIS})
+    wl = collect(LinRange(401.25, 998.75, 235))
+    return :($wl)
+end
 
 blue_band(::Type{DESIS}) = :Band_30
 
